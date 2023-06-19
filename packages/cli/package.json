@@ -1,0 +1,22 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^5.3.1",
+    "axios": "^1.4.0",
+    "cac": "^6.7.14",
+    "fast-glob": "^3.2.12",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/archiver": "^5.3.2"
+  }
+}

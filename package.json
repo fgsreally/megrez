@@ -1,0 +1,25 @@
+{
+  "name": "megrez",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.34.1",
+    "@changesets/cli": "^2.26.0",
+    "@types/node": "^18.15.11",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.31.0",
+    "lazyrepo": "0.0.0-alpha.12",
+    "tsup": "^6.5.0",
+    "turbo": "^1.7.0",
+    "typescript": "^4.9.4",
+    "vitepress": "1.0.0-alpha.40",
+    "vitest": "^0.26.3"
+  }
+}
