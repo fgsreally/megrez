@@ -1,8 +1,9 @@
-import { Ref, getModelForClass, prop } from '@typegoose/typegoose'
+import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { Rule } from 'phecda-server'
 import { UserEntity } from '../user/user.model'
+import { AssetEntity } from '../asset/asset.model'
 
-class ProjectEntity {
+class NamespaceEntity {
   _id!: string
 
   @Rule((item: any) => !!item, '项目名不能为空')
@@ -18,10 +19,13 @@ class ProjectEntity {
   @prop({ required: true, default: '' })
   description!: string
 
+  @prop({ default: [], ref: () => AssetEntity })
+   assets: Ref<AssetEntity>[]
+
   @prop()
-  config!: any
+  data!: any
 }
 
-const ProjectModel = getModelForClass(ProjectEntity)
+const NamespaceModel = getModelForClass(NamespaceEntity)
 
-export { ProjectEntity, ProjectModel }
+export { NamespaceEntity, NamespaceModel }

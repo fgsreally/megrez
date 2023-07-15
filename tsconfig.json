@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": false,
+    "emitDecoratorMetadata": true,
 
     "removeComments": false,
     "allowJs": true,

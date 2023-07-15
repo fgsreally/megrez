@@ -3,6 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": false,
     "experimentalDecorators":true,
+    "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -13,7 +14,10 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -1,7 +1,7 @@
 import { Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { UserEntity } from '../user/user.model'
-import { ProjectEntity } from '../project/project.model'
 import { isString } from '../../decorators/faker'
+import { NamespaceEntity } from '../namespace/namespace.model'
 
 class AssetEntity {
   _id!: string
@@ -14,18 +14,23 @@ class AssetEntity {
   @prop({ required: true })
   type!: string
 
-  @isString('必须存在所属项目')
-  @prop({ required: true, ref: () => ProjectEntity, foreignField: 'name', localField: 'project' })
-  project!: Ref<ProjectEntity>
+  @prop({ required: true, ref: () => NamespaceEntity, foreignField: 'assets', localField: 'namespace' })
+  namespace!: Ref<NamespaceEntity>
 
   @prop({ required: true, ref: () => UserEntity })
   creator!: Ref<UserEntity>
+
+  @prop({ required: true, ref: () => UserEntity })
+  users!: Ref<UserEntity>
 
   @prop({ required: true, ref: () => AssetEntity })
   dependences!: Ref<AssetEntity>[]
 
   @prop({ required: true, ref: () => AssetEntity })
-  depended!: Ref<AssetEntity>[]
+  includes!: Ref<AssetEntity>[]
+
+  @prop({ required: true })
+  data!: any
 }
 
 const AssetModel = getModelForClass(AssetEntity)
