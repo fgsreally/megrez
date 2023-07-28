@@ -1,28 +1,25 @@
-import { Init, Inject } from 'phecda-server'
-import * as mongoose from 'mongoose'
-import { MongoDBAtlasVectorSearch } from 'langchain/vectorstores/mongodb_atlas'
-import { Embeddings, OpenAIEmbeddings } from 'langchain/embeddings'
-import { Document } from 'langchain/document'
+import { BadRequestException, Tag } from 'phecda-server'
+
+import type { Ref } from '@typegoose/typegoose'
+import type { TeamEntity } from '../team/team.model'
+import { BaseSerice } from '../base/base.module'
+import type { UserEntity } from '../user/user.model'
+import type { NamespaceEntity } from './namespace.model'
 import { NamespaceModel } from './namespace.model'
 
-@Inject
-export class NamespaceService {
+@Tag('namespace')
+export class NamespaceService extends BaseSerice<typeof NamespaceEntity> {
   Model = NamespaceModel
 
-  findNamespace(name: string) {
-    return this.Model.find({ name })
+  async create(user: UserEntity, name: string, team: Ref<TeamEntity>) {
+    const namespace = await this.findByName(name, team)
+    if (namespace)
+      throw new BadRequestException('已有同名命名空间')
+    return NamespaceModel.create({ name, creator: user, owner: user ,team})
   }
 
-  async parseDataToDoc(data: any[]): Promise< Document[]> {
-    return data.map((item: any) => new Document(item))
-  }
-
-  async addDocToVectorStore(collectionName: string, data: any[]) {
-    const collection = mongoose.connection.collection(`lanchain:${collectionName}`)
-    const vectorStore = new MongoDBAtlasVectorSearch(new OpenAIEmbeddings(), {
-      collection,
-    })
-
-    await vectorStore.addDocuments(await this.parseDataToDoc(data))
+  async findByName(name: string, team: Ref<TeamEntity>) {
+    const namespace = await NamespaceModel.findOne({ name, team })
+    return namespace
   }
 }

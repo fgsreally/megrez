@@ -5,6 +5,7 @@ import { HNSWLib } from 'langchain/vectorstores'
 import { PromptTemplate } from 'langchain/prompts'
 import type { MongoDBAtlasVectorSearch } from 'langchain/vectorstores/mongodb_atlas'
 import { BufferMemory } from 'langchain/memory'
+import { loadQAStuffChain, loadQAMapReduceChain } from "langchain/chains";
 
 const CONDENSE_PROMPT
   = PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
@@ -52,4 +53,5 @@ export const makeChain = (
       memoryKey: 'chat_history', // Must be set to "chat_history"
     }),
   })
+  ret.call()
 }

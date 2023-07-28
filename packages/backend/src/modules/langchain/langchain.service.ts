@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
 import { MongoDBAtlasVectorSearch } from 'langchain/vectorstores/mongodb_atlas'
-import { Embeddings, OpenAIEmbeddings } from 'langchain/embeddings'
+import {  OpenAIEmbeddings } from 'langchain/embeddings'
 import { Document } from 'langchain/document'
 export class LangchainService {
   async parseDataToDoc(data: any[]): Promise< Document[]> {
@@ -15,4 +15,6 @@ export class LangchainService {
 
     await vectorStore.addDocuments(await this.parseDataToDoc(data))
   }
+
+  
 }

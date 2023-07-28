@@ -1,36 +1,39 @@
-import { Ref, getModelForClass, prop } from '@typegoose/typegoose'
-import { UserEntity } from '../user/user.model'
+import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { isString } from '../../decorators/faker'
 import { NamespaceEntity } from '../namespace/namespace.model'
+import { BaseModel } from '../base/base.module'
 
-class AssetEntity {
+class AssetEntity extends BaseModel {
   _id!: string
 
-  @isString('资产必须有名字')
+  @isString('必须有名字')
   @prop({ required: true })
   name!: string
 
-  @isString('资产必须存在类型')
+  @isString('必须存在类型')
   @prop({ required: true })
-  type!: string
+  category!: string
 
-  @prop({ required: true, ref: () => NamespaceEntity, foreignField: 'assets', localField: 'namespace' })
+  @prop({ required: true, ref: () => NamespaceEntity })
   namespace!: Ref<NamespaceEntity>
 
-  @prop({ required: true, ref: () => UserEntity })
-  creator!: Ref<UserEntity>
+  @prop({ default: '' })
+  description!: string
 
-  @prop({ required: true, ref: () => UserEntity })
-  users!: Ref<UserEntity>
-
-  @prop({ required: true, ref: () => AssetEntity })
+  @prop({ required: true, ref: () => AssetEntity, default: [] })
   dependences!: Ref<AssetEntity>[]
 
-  @prop({ required: true, ref: () => AssetEntity })
-  includes!: Ref<AssetEntity>[]
+  @prop({ required: true, ref: () => AssetEntity, default: [] })
+  invokers!: Ref<AssetEntity>[]
 
-  @prop({ required: true })
+  @prop({ })
   data!: any
+
+  @prop({})
+  documents!: {
+    content: string
+    meta: any
+  }[]
 }
 
 const AssetModel = getModelForClass(AssetEntity)

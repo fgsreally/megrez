@@ -1,26 +1,20 @@
 import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { Rule } from 'phecda-server'
-import { UserEntity } from '../user/user.model'
-import { AssetEntity } from '../asset/asset.model'
+import { TeamEntity } from '../team/team.model'
+import { BaseModel } from '../base/base.module'
 
-class NamespaceEntity {
+class NamespaceEntity extends BaseModel {
   _id!: string
 
-  @Rule((item: any) => !!item, '项目名不能为空')
-  @prop({ required: true, unique: true })
+  @Rule((item: any) => !!item, '名称不能为空')
+  @prop({ required: true })
   name!: string
 
-  @prop({ required: true, ref: () => UserEntity })
-  creator!: Ref<UserEntity>
+  @prop({ required: true, ref: () => TeamEntity })
+  team!: Ref<TeamEntity>
 
-  @prop({ default: [], ref: () => UserEntity })
-  users!: Ref<UserEntity>[]
-
-  @prop({ required: true, default: '' })
+  @prop({ default: '' })
   description!: string
-
-  @prop({ default: [], ref: () => AssetEntity })
-   assets: Ref<AssetEntity>[]
 
   @prop()
   data!: any
