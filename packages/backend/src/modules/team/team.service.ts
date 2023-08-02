@@ -11,8 +11,17 @@ export class TeamService extends BaseSerice<typeof TeamEntity> {
     return TeamModel.create({
       creator: user,
       owner: user,
+      users: [user],
       name: teamName,
       description,
+    })
+  }
+
+  findByUser(user: UserEntity) {
+    return TeamModel.find({
+      users: {
+        $in: [user],
+      },
     })
   }
 }

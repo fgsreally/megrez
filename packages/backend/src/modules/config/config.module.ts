@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Init, NotFoundException, Param, Post } from 'phecda-server'
+import { Controller, Init } from 'phecda-server'
 import * as mongoose from 'mongoose'
 
 @Controller('/config')
-export class ConfigController {
+export class ConfigModule {
   @Init
   async init() {
     console.log('start connect')

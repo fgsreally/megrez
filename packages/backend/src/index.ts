@@ -1,18 +1,15 @@
-import { Factory, addGuard, addMiddleware, bindApp } from 'phecda-server'
+import { Factory, addGuard, bindApp } from 'phecda-server'
 import express from 'express'
-import { UserController } from './controller/user.controller'
-import { ConfigController } from './controller/config.controller'
-import { UploadController } from './controller/upload.controller'
-import { ProjectController } from './controller/project.controller'
-import { InfoController } from './controller/info.controller'
-
+import { ConfigModule } from './modules/config/config.module'
+import { AssetController } from './modules/asset/asset.controller'
+import { NamespaceController } from './modules/namespace/namespace.controller'
+import { TeamController } from './modules/team/team.controller'
 import { jwtGuard } from './guards/jwt'
-import { uploadMiddleware } from './middlewares/upload'
-const data = await Factory([ConfigController, UserController, UploadController, ProjectController, InfoController])
-data.output('pmeta.js')
+import { UserController } from './modules/user/user.controller'
+const data = await Factory([ConfigModule, UserController, AssetController, NamespaceController, TeamController])
+data.output()
 const app = express()
 // ServerContext.middlewareRecord.upload = uploadMiddleware
-addMiddleware('upload', uploadMiddleware)
 app.use(express.json())
 
 addGuard('jwt', jwtGuard(data.moduleMap.get('user')!))

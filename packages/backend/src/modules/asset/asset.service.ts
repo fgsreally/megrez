@@ -10,11 +10,12 @@ export class AssetService {
     return AssetModel.create({
       creator: user,
       owner: user,
-      ...asset,
-    } as any)
+      users:[user],
+      ...asset as any,
+    })
   }
 
-  findByNamespace(namespace: NamespaceEntity) { // get all assets
+  findByNamespace(namespace: NamespaceEntity | string) { // get all assets
     return AssetModel.find({ namespace })
   }
 
@@ -22,7 +23,7 @@ export class AssetService {
     return AssetModel.findByIdAndRemove(id)
   }
 
-  async createLine(dependenceId: string, invokerId: string) {
+  async createLink(dependenceId: string, invokerId: string) {
     const dependence = await AssetModel.findById(dependenceId)
     if (!dependence)
       throw new NotFoundException(`没找到id为${dependenceId}的资产作为依赖`)

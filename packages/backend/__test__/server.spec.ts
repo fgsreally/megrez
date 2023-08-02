@@ -3,7 +3,7 @@ import { Factory } from 'phecda-server'
 import { NamespaceService } from '../src/modules/namespace/namespace.service'
 import { AssetService } from '../src/modules/asset/asset.service'
 import { TeamService } from '../src/modules/team/team.service'
-import { UserService } from '../src/modules/user/user.controller'
+import { UserService } from '../src/modules/user/user.service'
 import type { UserEntity } from '../src/modules/user/user.model'
 import { UserModel } from '../src/modules/user/user.model'
 import { TeamModel } from '../src/modules/team/team.model'
@@ -48,7 +48,7 @@ describe('User/Team/Namespace', async () => {
       namespace,
     } as any)
     expect(await AssetModel.countDocuments()).toBe(2)
-    await Asset.createLine(asset1.id, asset2.id)
+    await Asset.createLink(asset1.id, asset2.id)
     const assets = await Asset.findByNamespace(namespace)
     expect(assets[0].dependences.length).toBe(0)
     expect(assets[1].invokers.length).toBe(0)

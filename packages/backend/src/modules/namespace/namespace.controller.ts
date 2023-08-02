@@ -1,25 +1,35 @@
 import { Body, Controller, Get, Param, Post } from 'phecda-server'
 
-import { NamespaceEntity, NamespaceModel } from './namespace.model'
+import { NamespaceModel } from './namespace.model'
+import { NamespaceService } from './namespace.service'
 import { Auth } from '@/decorators/auth'
 
 @Auth()
 @Controller('/namespace')
 export class NamespaceController {
-  private Model = NamespaceModel
-
-  constructor() {
+  context: any
+  constructor(private service: NamespaceService) {
 
   }
 
-  @Post('')
-  // @Middle('x-monitoring-system')
-  async createProject(@Body() body: NamespaceEntity) {
-    return this.Model.create(body)
+  @Get('/:team')
+  async getAll(@Param('team') team: string) {
+    const { request: { user } } = this.context
+    return this.service.findByUserAndTeam(user, team )
+  }
+
+  @Post('/:team')
+  async add(@Body('') namespace: {
+    name: string
+    description: string
+    data: any
+  }, @Param('team') team: string) {
+    const { request: { user } } = this.context
+    return this.service.create(user, namespace.name, team as any)
   }
 
   @Get('/:name')
-  async getProjectInfo(@Param('name') name: string) {
-    return this.Model.find({ name })
+  async get(@Param('name') name: string) {
+    return this.service.findByName(name)
   }
 }

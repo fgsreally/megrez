@@ -30,10 +30,7 @@ class AssetEntity extends BaseModel {
   data!: any
 
   @prop({})
-  documents!: {
-    content: string
-    meta: any
-  }[]
+  meta?: any
 }
 
 const AssetModel = getModelForClass(AssetEntity)

@@ -17,16 +17,16 @@ export class BaseModel {
 export abstract class BaseSerice<T extends typeof BaseModel> {
   abstract Model: ReturnModelType<T>
 
-  async find(name: string) {
+  async findByName(name: string) {
     const entity = await this.Model.findOne({ name })
     if (!entity)
-      throw new NotFoundException('没有对应的team')
+      throw new NotFoundException('没有对应的name')
 
     return entity
   }
 
   async addUsers(users: Ref<UserEntity>[], name: string) {
-    const entity = await this.find(name)
+    const entity = await this.findByName(name)
     entity.users.concat(users)
     return entity.save()
   }

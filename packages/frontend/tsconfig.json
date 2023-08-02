@@ -1,11 +1,21 @@
 {
-  "files": [],
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","./components.d.ts","./auto-imports.d.ts"],
+
+  "compilerOptions": {
+    "moduleResolution":"node",
+    "useDefineForClassFields":false,
+    "types": [
+      "@vue-macros/reactivity-transform/macros-global"
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+
   "references": [
     {
       "path": "./tsconfig.node.json"
     },
-    {
-      "path": "./tsconfig.app.json"
-    }
   ]
 }
