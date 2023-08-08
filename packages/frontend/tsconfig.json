@@ -5,6 +5,7 @@
   "compilerOptions": {
     "moduleResolution":"node",
     "useDefineForClassFields":false,
+    "experimentalDecorators": true,
     "types": [
       "@vue-macros/reactivity-transform/macros-global"
     ],

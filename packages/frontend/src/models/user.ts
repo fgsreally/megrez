@@ -1,6 +1,19 @@
-import {useRequest} from 'vue-request'
+import type { UserEntity } from '../../../backend/src/modules/user/user.model'
+import type { TeamEntity } from '../../../backend/src/modules/team/team.model'
 
+export class UserModel {
+  user!: UserEntity
+  team!: TeamEntity 
+  constructor() {
+    this.refresh()
+  }
 
-export class UserModel{
-    user=useRequest()
+  async refresh() {
+    this.user = await getUserInfo()
+  }
+
+  async refreshTeam() {
+    const teams = await getTeams()
+    this.team = teams[0]
+  }
 }

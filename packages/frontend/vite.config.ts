@@ -36,7 +36,7 @@ export default defineConfig({
     Icons({ compiler: 'vue3' }),
     // Inspect(),
     PC({
-      localPath: '../server/pmeta.js',
+      localPath: '../backend/pmeta.js',
       port: ' http://localhost:3699/',
 
     }),

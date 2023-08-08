@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { register } from '@/api/user'
+import { Message } from '@arco-design/web-vue'
 
 const form = reactive({
   username: '',
@@ -7,15 +7,24 @@ const form = reactive({
   password: '',
 })
 
+const router = useRouter()
 async function registerOrLogin() {
-  const token = await register(form.username, form.email, form.password)
-  localStorage.setItem('auth', token)
+  try {
+    const token = await login(form.username, form.email, form.password)
+    localStorage.setItem('auth', token)
+
+    router.push('/main')
+  }
+  catch (e) {
+    Message.error({
+      content: e.message,
+    })
+  }
 }
 </script>
 
 <template>
   <div>
-    <a-button>login</a-button>
     <a-form :model="form" @submit="registerOrLogin">
       <a-form-item>
         <a-input v-model="form.username" />
@@ -25,6 +34,11 @@ async function registerOrLogin() {
       </a-form-item>
       <a-form-item>
         <a-input v-model="form.password" />
+      </a-form-item>
+      <a-form-item>
+        <a-button @click="registerOrLogin">
+          login
+        </a-button>
       </a-form-item>
     </a-form>
   </div>

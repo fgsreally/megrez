@@ -1,79 +1,39 @@
 <script setup lang="ts">
+import { Message } from '@arco-design/web-vue'
+
 const collapsed = ref(false)
+const onCollapse = (val: boolean, type: string) => {
+  const content = type === 'responsive' ? '触发响应式收缩' : '点击触发收缩'
+  Message.info({
+    content,
+    duration: 2000,
+  })
+  collapsed.value = val
+}
 </script>
 
 <template>
-  <div>
-    <a-layout-sider
-      hide-trigger collapsible :collapsed="collapsed"
-      @collapse="onCollapse"
+  <a-layout-sider
+    hide-trigger collapsible :collapsed="collapsed"
+    @collapse="onCollapse"
+  >
+    <a-menu
+      :default-open-keys="['1']" :default-selected-keys="['0_3']" :style="{ width: '100%' }"
     >
-      <a-menu
-        :default-open-keys="['1']" :default-selected-keys="['0_3']" :style="{ width: '100%' }"
-      >
-        <a-menu-item key="0_1" disabled>
-          <IconHome />
-          Menu 1
-        </a-menu-item>
-        <a-menu-item key="0_2">
-          <IconCalendar />
-          Menu 2
-        </a-menu-item>
-        <a-menu-item key="0_3">
-          <IconCalendar />
-          Menu 3
-        </a-menu-item>
-        <a-sub-menu key="1">
-          <template #title>
-            <span>
-              <IconCalendar />Navigation 1
-            </span>
-          </template>
-          <a-menu-item key="1_1">
-            Menu 1
-          </a-menu-item>
-          <a-menu-item key="1_2">
-            Menu 2
-          </a-menu-item>
-          <a-sub-menu key="2" title="Navigation 2">
-            <a-menu-item key="2_1">
-              Menu 1
-            </a-menu-item>
-            <a-menu-item key="2_2">
-              Menu 2
-            </a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="3" title="Navigation 3">
-            <a-menu-item key="3_1">
-              Menu 1
-            </a-menu-item>
-            <a-menu-item key="3_2">
-              Menu 2
-            </a-menu-item>
-            <a-menu-item key="3_3">
-              Menu 3
-            </a-menu-item>
-          </a-sub-menu>
-        </a-sub-menu>
-        <a-sub-menu key="4">
-          <template #title>
-            <span>
-              <IconCalendar />Navigation 4
-            </span>
-          </template>
-          <a-menu-item key="4_1">
-            Menu 1
-          </a-menu-item>
-          <a-menu-item key="4_2">
-            Menu 2
-          </a-menu-item>
-          <a-menu-item key="4_3">
-            Menu 3
-          </a-menu-item>
-        </a-sub-menu>
-      </a-menu>
-    </a-layout-sider>
-  </div>
+      <a-menu-item key="0_1" disabled>
+        <p>1</p>
+        Menu 1
+      </a-menu-item>
+      <a-menu-item key="0_2">
+        <p>2</p>
+        Menu 2
+      </a-menu-item>
+      <a-menu-item key="0_3">
+        <p>3</p>
+        Menu 3
+      </a-menu-item>
+    </a-menu>
+  </a-layout-sider>
 </template>
 
 <style scoped></style>

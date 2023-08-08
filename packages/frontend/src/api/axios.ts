@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { Message } from '@arco-design/web-vue'
-import { createReq, useC } from 'phecda-client'
+import { createReq } from 'phecda-client'
 
-const instance = axios.create({ baseURL: '' })
+const instance = axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
 
 instance.interceptors.request.use((config) => {
   const token = ''

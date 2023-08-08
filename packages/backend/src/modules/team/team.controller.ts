@@ -9,7 +9,7 @@ export class TeamController {
   }
 
   @Post('')
-  create(@Body() data: { teamName: string; description?: string }) {
+  add(@Body() data: { teamName: string; description?: string }) {
     const { request: { user } } = this.context
     return this.service.create(user, data.teamName, data.description)
   }

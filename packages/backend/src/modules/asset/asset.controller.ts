@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from 'phecda-server'
 import { NamespaceService } from '../namespace/namespace.service'
+import { Auth } from '../../decorators/auth'
 import { AssetEntity, AssetModel } from './asset.model'
 import { AssetService } from './asset.service'
-import { Auth } from '@/decorators/auth'
 
 @Auth()
 @Controller('/asset')

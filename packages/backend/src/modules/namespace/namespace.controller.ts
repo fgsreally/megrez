@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from 'phecda-server'
 
+import { Auth } from '../../decorators/auth'
 import { NamespaceModel } from './namespace.model'
 import { NamespaceService } from './namespace.service'
-import { Auth } from '@/decorators/auth'
 
 @Auth()
 @Controller('/namespace')
@@ -15,7 +15,7 @@ export class NamespaceController {
   @Get('/:team')
   async getAll(@Param('team') team: string) {
     const { request: { user } } = this.context
-    return this.service.findByUserAndTeam(user, team )
+    return this.service.findByUserAndTeam(user, team)
   }
 
   @Post('/:team')

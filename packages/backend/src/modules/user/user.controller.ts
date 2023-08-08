@@ -2,6 +2,7 @@ import { Body, Controller, Define, Get, NotFoundException, Post, Tag } from 'phe
 import jwt from 'jsonwebtoken'
 import { compareSync } from 'bcryptjs'
 import { UserService } from './user.service'
+import type { UserEntity } from './user.model'
 
 @Controller('/user')
 export class UserController {
@@ -12,7 +13,7 @@ export class UserController {
   context: any
   @Get('')
   async get() {
-    return this.context.request.user
+    return this.context.request.user as UserEntity
   }
 
   @Define('auth', false)
@@ -23,7 +24,7 @@ export class UserController {
     if (existingUser) {
       if (!compareSync(password, existingUser.password))
         throw new NotFoundException('密码不正确')
-      const token = jwt.sign({ userId: existingUser.id }, import.meta.env.VITE_SECRET, {
+      const token = jwt.sign({ userId: existingUser.id }, process.env.SECRET, {
         expiresIn: '1h',
       })
       return token
@@ -31,7 +32,7 @@ export class UserController {
     else {
       const user = await this.userService.create(name, email, password)
       // 创建 JWT Token，并返回给客户端
-      const token = jwt.sign({ userId: user._id }, import.meta.env.VITE_SECRET, {
+      const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
         expiresIn: '1h',
       })
       return token

@@ -5,7 +5,7 @@
     "experimentalDecorators":true,
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
-    "module": "es2022",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
@@ -14,11 +14,15 @@
     "esModuleInterop": true,
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir":"dist",
     "paths": {
       "@/*": ["./src/*"]
     }
   },
   "include": ["src","__test__"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "ts-node": {
+    "files": true 
+  }
 }

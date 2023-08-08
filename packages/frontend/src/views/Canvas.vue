@@ -20,7 +20,7 @@ const container = ref<HTMLElement>()
 watch(() => route.params.namespace, renderGraph)
 async function renderGraph() {
   const graph = new G6.Graph({
-    container: container.value, // 指定挂载容器
+    container: container.value!, // 指定挂载容器
     width: 800, // 图的宽度
     height: 500, // 图的高度
   })

@@ -32,7 +32,7 @@ export abstract class BaseSerice<T extends typeof BaseModel> {
   }
 
   async updateOwner(user: Ref<UserEntity>, name: string) {
-    const entity = await this.find(name)
+    const entity = await this.findByName(name)
     entity.owner = user
     return entity.save()
   }
