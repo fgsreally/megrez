@@ -1,44 +1,73 @@
-import { PassThrough } from 'stream'
-import archiver from 'archiver'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
+import cac from 'cac'
 import axios from 'axios'
-export async function uploadFilesAsZip(sourceFiles: string[], targetFileName: string, uploadUrl: string): Promise<void> {
-  const output =new PassThrough()
-  const archive = archiver('zip', { zlib: { level: 9 } })
+import { loadConfig } from 'unconfig'
+import fg from 'fast-glob'
+import pkg from '../package.json'
 
-  archive.on('error', (err) => {
-    throw err
+const cli = cac('megrez')
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const require = createRequire(__dirname)
+const globalConfig = require('../assets/megrez.json')
+async function getConfig(file = 'megrez') {
+  const { config } = await loadConfig({
+    sources: [
+      {
+        files: file,
+        // default extensions
+        extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs'],
+      },
+
+    ],
+
+    merge: false,
   })
 
-  archive.pipe(output)
-
-  for (const file of sourceFiles)
-    archive.file(file, { name: file })
-
-  archive.finalize()
-
-  const data = new FormData()
-  data.append('file', output.read(), targetFileName)
-
-  try {
-    const response = await axios.post(uploadUrl, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-
-    console.log('Upload successful!')
-    console.log(response.data)
-  }
-  catch (error) {
-    console.error('Upload failed:', error)
-  }
+  return Object.assign(globalConfig, config)
 }
 
-// 调用示例
-// const sourceFiles = ['/path/to/file1', '/path/to/file2', '/path/to/file3'] // 指定要压缩的文件数组
-// const targetFileName = 'output.zip' // 指定目标压缩文件名
-// const uploadUrl = 'http://your-express-route-url' // 指定Express路由的URL
+async function handleAssets(files: string[], cb?: (...args: any) => any) {
+  const ret: any = []
+  for (const i of files) {
+    try {
+      if (cb)
+        ret.push(await cb(i))
+    }
+    catch (e) {
+      console.log(e)
+      console.log(`exit when handling file--'${i}'`)
+    }
+  }
+  return ret
+}
 
-// uploadFilesAsZip(sourceFiles, targetFileName, uploadUrl)
-//   .then(() => console.log('Done'))
-//   .catch(err => console.error(err))
+cli.command('run <glob>', 'handle assets and store metadata').action(
+  async (glob = '*') => {
+    const config = await getConfig()
+    const files = await fg(glob)
+    const ret = await handleAssets(files, config.handleAsset)
+    if (ret.length) {
+      try {
+        await axios.post(config.baseUrl, ret, {
+          headers: {
+            Authorization: config.token,
+          },
+        })
+        console.log('upload metadata successfully')
+      }
+      catch (e) {
+        console.log(e)
+        console.log('upload failed')
+      }
+    }
+    else {
+      console.log('no asset to handle')
+    }
+  })
+
+cli.help()
+cli.version(pkg.version)
+
+cli.parse()
