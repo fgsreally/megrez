@@ -5,7 +5,8 @@ import { createReq } from 'phecda-client'
 const instance = axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
 
 instance.interceptors.request.use((config) => {
-  const token = ''
+  const token = localStorage.getItem('auth')
+
   if (token)
     config.headers.Authorization = token
   return config

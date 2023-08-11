@@ -5,3 +5,4 @@ import { $request } from './axios'
 const instance = useC(NamespaceController)
 export const addNamespace = toAsync($request, instance.add)
 export const getNamespace = toAsync($request, instance.get)
+export const getAllNamespace = toAsync($request, instance.getAll)

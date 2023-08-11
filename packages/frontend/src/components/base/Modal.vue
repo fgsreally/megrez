@@ -5,11 +5,9 @@ const { modelValue } = defineModels<{
 </script>
 
 <template>
-  <Teleport v-if="modelValue" to="body" tag="section">
-    <div>
-      <slot />
-    </div>
-  </Teleport>
+  <a-modal v-model:visible="modelValue" @cancel="modelValue = false">
+    <slot ref="el" />
+  </a-modal>
 </template>
 
 <style scoped></style>

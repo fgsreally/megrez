@@ -5,7 +5,7 @@ import VueMacros from 'unplugin-vue-macros/vite'
 import UnoCSS from 'unocss/vite'
 import Components from 'unplugin-vue-components/vite'
 import transformerDirectives from '@unocss/transformer-directives'
-import { presetAttributify, presetUno } from 'unocss'
+import { presetAttributify, presetIcons, presetUno } from 'unocss'
 import AutoImport from 'unplugin-auto-import/vite'
 import ReactivityTransform from '@vue-macros/reactivity-transform/vite'
 import PC from 'phecda-client/vite'
@@ -50,6 +50,11 @@ export default defineConfig({
       },
     }),
     AutoImport({
+      include: [
+        /\.ts$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/, /\.vue\?vue/, // .vue
+
+      ],
       dirs: ['./src/**/*'],
       imports: ['vue', 'vue-router'],
       resolvers: [
@@ -75,6 +80,8 @@ export default defineConfig({
 
       },
       presets: [
+        presetIcons({ /* options */ }),
+
         presetAttributify(),
         presetUno(),
       ],
