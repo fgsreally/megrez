@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { useRequest } from 'vue-request'
 import { Graph } from '@antv/g6'
-import { useRoute } from 'vue-router'
+import { useV } from 'phecda-vue'
+import { useRequest } from 'vue-request'
 import { getAsset } from '@/api/asset'
 
-const route = useRoute()
-const { data, run } = useRequest(getAsset, {
+const { namespace } = $(useV(UserModel))
+
+const { runAsync } = useRequest(getAsset, {
   manual: true,
   cacheKey(params) {
-    if (params && params[0])
+    if (params)
       return `asset-${params[0]}`
-
     return ''
   },
 })
@@ -30,8 +30,9 @@ onMounted(() => {
   renderGraph()
 })
 async function renderGraph() {
-  await run(route.params.namespace as string)
-  graph.data(data.value)
+  const assets = await runAsync(namespace._id)
+
+  graph.data(handleAsset(assets, {}))
   graph.render()
 }
 </script>

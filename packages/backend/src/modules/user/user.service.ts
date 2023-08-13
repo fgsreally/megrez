@@ -1,9 +1,18 @@
 import { Tag } from 'phecda-server'
+import { TeamService } from '../team/team.service'
 import { UserModel } from './user.model'
 @Tag('user')
 export class UserService {
+  constructor(protected teamService: TeamService) {
+
+  }
+
   async create(name: string, email: string, password: string) {
-    return UserModel.create({ name, email, password })// permission: Permission.USER
+    const user = await UserModel.create({ name, email, password })
+    await this.teamService.create(user, 'default', `${name}\'s default team`)
+
+    return user
+    // permission: Permission.USER
   }
 
   findByEmail(email: string) {

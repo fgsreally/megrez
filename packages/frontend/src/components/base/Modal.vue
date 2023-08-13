@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { emitter } from 'phecda-vue';
 const { modelValue } = defineModels<{
   modelValue: boolean
 }>()
+
+emitter.on('cancel')
 </script>
 
 <template>

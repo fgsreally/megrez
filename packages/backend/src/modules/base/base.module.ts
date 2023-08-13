@@ -25,6 +25,14 @@ export abstract class BaseSerice<T extends typeof BaseModel> {
     return entity
   }
 
+  async findById(id: string) {
+    const entity = await this.Model.findById(id)
+    if (!entity)
+      throw new NotFoundException('没有对应的id')
+
+    return entity
+  }
+
   async addUsers(users: Ref<UserEntity>[], name: string) {
     const entity = await this.findByName(name)
     entity.users.concat(users)

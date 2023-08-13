@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Post } from 'phecda-server'
+import { Body, Controller, Get, Param, Post, Query } from 'phecda-server'
 
 import { Auth } from '../../decorators/auth'
-import { NamespaceModel } from './namespace.model'
 import { NamespaceService } from './namespace.service'
 
 @Auth()
@@ -12,24 +11,24 @@ export class NamespaceController {
 
   }
 
-  @Get('/:team')
-  async getAll(@Param('team') team: string) {
+  @Get('')
+  async get(@Query('name') name: string) {
+    return this.service.findByName(name)
+  }
+
+  @Get('/team')
+  async getAll(@Query('team') team: string) {
     const { request: { user } } = this.context
     return this.service.findByUserAndTeam(user, team)
   }
 
-  @Post('/:team')
-  async add(@Body('') namespace: {
+  @Post('/add')
+  async add(@Body('data') namespace: {
     name: string
     description: string
-    data: any
-  }, @Param('team') team: string) {
+    data?: any
+  }, @Query('team') team: string) {
     const { request: { user } } = this.context
     return this.service.create(user, namespace.name, team as any)
-  }
-
-  @Get('/:name')
-  async get(@Param('name') name: string) {
-    return this.service.findByName(name)
   }
 }

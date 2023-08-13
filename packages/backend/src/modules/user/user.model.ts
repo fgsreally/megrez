@@ -18,7 +18,6 @@ class UserEntity {
   email!: string
 
   @prop({
-    select: false,
     get(val) {
       return val
     },

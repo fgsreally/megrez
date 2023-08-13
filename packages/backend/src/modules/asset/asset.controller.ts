@@ -16,9 +16,9 @@ export class AssetController {
   @Post('')
   async add(@Body('namespace') namespace: string, @Body('asset') asset: AssetEntity) {
     const { request: { user } } = this.context
-    asset.creator = user
+    asset.owner = asset.creator = user
 
-    asset.namespace = await this.namespaceService.findByName(namespace)
+    asset.namespace = await this.namespaceService.findById(namespace)
 
     // this.langchainService.addDocToVectorStore(asset.type, [asset.data])
     return new this.Model(asset).save()

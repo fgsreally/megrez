@@ -25,7 +25,7 @@ export class UserController {
       if (!compareSync(password, existingUser.password))
         throw new NotFoundException('密码不正确')
       const token = jwt.sign({ userId: existingUser.id }, process.env.SECRET, {
-        expiresIn: '1h',
+        expiresIn: '3650d',
       })
       return token
     }
@@ -33,7 +33,7 @@ export class UserController {
       const user = await this.userService.create(name, email, password)
       // 创建 JWT Token，并返回给客户端
       const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
-        expiresIn: '1h',
+        expiresIn: '3650d',
       })
       return token
     }

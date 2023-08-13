@@ -1,4 +1,5 @@
 import { NotFoundException, Tag } from 'phecda-server'
+import mongoose from 'mongoose'
 import type { NamespaceEntity } from '../namespace/namespace.model'
 import type { UserEntity } from '../user/user.model'
 import type { AssetEntity } from './asset.model'
@@ -10,13 +11,13 @@ export class AssetService {
     return AssetModel.create({
       creator: user,
       owner: user,
-      users:[user],
+      users: [user],
       ...asset as any,
     })
   }
 
-  findByNamespace(namespace: NamespaceEntity | string) { // get all assets
-    return AssetModel.find({ namespace })
+  async findByNamespace(id: string) { // get all assets
+    return AssetModel.find({ namespace: id })
   }
 
   async delete(id: string) {

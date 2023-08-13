@@ -6,7 +6,7 @@ class TeamEntity extends BaseModel {
   _id!: string
 
   @Rule((item: any) => !!item, '组织名不能为空')
-  @prop({ required: true, unique: true })
+  @prop({ required: true })
   name!: string
 
   @prop({ default: '' })

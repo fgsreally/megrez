@@ -2,7 +2,7 @@
 import { Message } from '@arco-design/web-vue'
 import { useV } from 'phecda-vue'
 import CreateNamespace from '@/components/modals/CreateNamespace.vue'
-const { team, namespaces } = $(useV(UserModel))
+const { updateNamespace, namespaces } = $(useV(UserModel))
 const visible = ref(false)
 const collapsed = ref(false)
 const onCollapse = (val: boolean, type: string) => {
@@ -30,7 +30,7 @@ const onCollapse = (val: boolean, type: string) => {
     <a-menu
       :style="{ width: '100%' }"
     >
-      <a-menu-item v-for="item in namespaces" :key="item.name">
+      <a-menu-item v-for="item in namespaces" :key="item.name" @click="updateNamespace(item)">
         <p>{{ item.name }}</p>
         {{ item.description }}
       </a-menu-item>
