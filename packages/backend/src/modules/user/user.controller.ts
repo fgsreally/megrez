@@ -1,10 +1,12 @@
 import { Body, Controller, Define, Get, NotFoundException, Post, Tag } from 'phecda-server'
 import jwt from 'jsonwebtoken'
 import { compareSync } from 'bcryptjs'
+import { Auth } from '../../decorators/auth'
 import { UserService } from './user.service'
 import type { UserEntity } from './user.model'
 
 @Controller('/user')
+@Auth()
 export class UserController {
   constructor(private userService: UserService) {
 
@@ -27,15 +29,16 @@ export class UserController {
       const token = jwt.sign({ userId: existingUser.id }, process.env.SECRET, {
         expiresIn: '3650d',
       })
-      return token
+      return { token, ...existingUser.toJSON() }
     }
     else {
       const user = await this.userService.create(name, email, password)
+
       // 创建 JWT Token，并返回给客户端
       const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
         expiresIn: '3650d',
       })
-      return token
+      return { token, ...user.toJSON() }
     }
 
     // 创建用户

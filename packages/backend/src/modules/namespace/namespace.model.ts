@@ -1,4 +1,4 @@
-import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
+import { type Ref, getModelForClass, modelOptions, prop } from '@typegoose/typegoose'
 import { Rule } from 'phecda-server'
 import { TeamEntity } from '../team/team.model'
 import { BaseModel } from '../base/base.module'
@@ -9,7 +9,7 @@ class NamespaceEntity extends BaseModel {
   name!: string
 
   @prop({ required: true, ref: () => TeamEntity })
-  team!: Ref<TeamEntity>
+  team!: Ref<TeamEntity> | string
 
   @prop({ default: '' })
   description!: string

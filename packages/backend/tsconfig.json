@@ -14,13 +14,12 @@
     "esModuleInterop": true,
     "lib": ["es2022", "DOM"],
     "skipLibCheck": true,
+    "declaration":true,
     "noEmit": false,
-    "outDir":"dist",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "outDir":"dist"
+
   },
-  "include": ["src","__test__"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "ts-node": {
     "files": true 

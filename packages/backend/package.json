@@ -2,7 +2,8 @@
   "name": "megrez-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/modules/index.js",
+  "types": "dist/modules/index.d.ts",
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build:prod": "tsc",
@@ -25,7 +26,7 @@
     "langchain": "^0.0.109",
     "mongoose": "^7.1.0",
     "multer": "1.4.5-lts.1",
-    "phecda-server": "^2.1.1",
+    "phecda-server": "3.0.0-alpha.0",
     "send": "^0.18.0",
     "tsup": "^6.5.0",
     "unzipper": "^0.10.11",
@@ -39,6 +40,7 @@
     "@types/unzipper": "^0.10.5",
     "mongodb-memory-server": "^8.13.0",
     "nodemon": "^3.0.1",
+    "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }

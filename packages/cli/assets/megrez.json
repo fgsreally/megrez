@@ -1,3 +1,1 @@
-{
-    
-}
+{"baseUrl":"http://localhost:3699/","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGQ3NWNkMWZkNjZmZTY3Y2Y4OGU2MjEiLCJpYXQiOjE2OTIwMDQxNzQsImV4cCI6MjAwNzM2NDE3NH0.wv3H5IcyjGOmLGZq8qKiE6Uo9_0I324NomGkCOAPmrU","team":{"name":"default","id":"64d75cd2fd66fe67cf88e623"},"namespace":{"name":"fgs","id":"64d75e11fd66fe67cf88e628"}}

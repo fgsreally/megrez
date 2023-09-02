@@ -14,18 +14,16 @@ export class AssetController {
   }
 
   @Post('')
-  async add(@Body('namespace') namespace: string, @Body('asset') asset: AssetEntity) {
+  async addAsset(@Body('namespace') namespace: string, @Body('asset') asset: AssetEntity) {
     const { request: { user } } = this.context
     asset.owner = asset.creator = user
+    // asset.namespace = await this.namespaceService.findById(namespace)
 
-    asset.namespace = await this.namespaceService.findById(namespace)
-
-    // this.langchainService.addDocToVectorStore(asset.type, [asset.data])
     return new this.Model(asset).save()
   }
 
   @Get('/:namespace')
-  async get(@Param('namespace') namespace: string) {
+  async getAssetByNamespace(@Param('namespace') namespace: string) {
     return this.assetService.findByNamespace(namespace)
   }
 }

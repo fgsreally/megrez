@@ -1,22 +1,18 @@
-import { Body, Controller, Get, Post } from 'phecda-server'
+import { Body, Controller, Get, Post, Query } from 'phecda-server'
+import { BaseController } from '../base/base.controller'
+import { Auth } from '../../decorators/auth'
 import { TeamService } from './team.service'
 
 @Controller('/team')
-export class TeamController {
-  context: any
-  constructor(private service: TeamService) {
-
+@Auth()
+export class TeamController extends BaseController<TeamService> {
+  constructor(protected service: TeamService) {
+    super()
   }
 
-  @Post('')
-  add(@Body() data: { teamName: string; description?: string }) {
-    const { request: { user } } = this.context
-    return this.service.create(user, data.teamName, data.description)
-  }
-
-  @Get('')
-  getTeams() {
-    const { request: { user } } = this.context
-    return this.service.findByUser(user)
+  @Post('/user')
+  async addUser(@Body('') { teamId, userId }: { teamId: string; userId: string }) {
+    await this.service.addUser(teamId, userId)
+    return true
   }
 }

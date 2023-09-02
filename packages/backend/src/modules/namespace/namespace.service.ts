@@ -12,19 +12,6 @@ import { NamespaceModel } from './namespace.model'
 export class NamespaceService extends BaseSerice<typeof NamespaceEntity> {
   Model = NamespaceModel
 
-  async create(user: UserEntity, name: string, team: Ref<TeamEntity>) {
-    const namespace = await this.findByTeam(name, team)
-    if (namespace.length)
-      throw new BadRequestException('已有同名命名空间')
-    return NamespaceModel.create({
-      name,
-      creator: user,
-      owner: user,
-      users: [user],
-      team,
-    })
-  }
-
   async findByTeam(name: string, team: Ref<TeamEntity>) {
     return NamespaceModel.find({ name, team })
   }
