@@ -6,10 +6,10 @@ import { UserEntity } from '../user/user.model'
 
 export class BaseModel {
   @prop({ required: true, ref: () => UserEntity })
-  creator!: Ref<UserEntity>
+  creator: Ref<UserEntity>
 
   @prop({ ref: () => UserEntity })
-  owner!: Ref<UserEntity>
+  owner: Ref<UserEntity>
 }
 
 export abstract class BaseSerice<T extends typeof BaseModel> {

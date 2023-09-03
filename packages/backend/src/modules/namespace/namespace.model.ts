@@ -9,7 +9,7 @@ class NamespaceEntity extends BaseModel {
   name!: string
 
   @prop({ required: true, ref: () => TeamEntity })
-  team!: Ref<TeamEntity> | string
+  team!: Ref<TeamEntity>
 
   @prop({ default: '' })
   description!: string

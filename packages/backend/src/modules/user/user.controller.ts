@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { compareSync } from 'bcryptjs'
 import { Auth } from '../../decorators/auth'
 import { UserService } from './user.service'
-import type { UserEntity } from './user.model'
+import { UserEntity } from './user.model'
 
 @Controller('/user')
 @Auth()
@@ -15,12 +15,12 @@ export class UserController {
   context: any
   @Get('')
   async get() {
-    return this.context.request.user as UserEntity
+    return this.context.request.user as Omit<UserEntity, 'password'>
   }
 
   @Define('auth', false)
   @Post('/login')
-  async login(@Body('name') name: string, @Body('email') email: string, @Body('password') password: string) {
+  async login(@Body() { email, password, name }: UserEntity) {
     // 检查邮箱是否已被注册
     const existingUser = await this.userService.findByEmail(email)
     if (existingUser) {
