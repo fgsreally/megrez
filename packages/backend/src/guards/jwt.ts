@@ -1,9 +1,9 @@
 import type { P, ServerCtx } from 'phecda-server'
 import { NotFoundException } from 'phecda-server'
 import jwt from 'jsonwebtoken'
-import type { UserService } from '../modules/user/user.service'
+import { UserModel } from '../modules'
 
-export function jwtGuard(User: UserService): P.Guard {
+export function jwtGuard(): P.Guard {
   return async (context: ServerCtx) => {
     const { request, meta: { data: { define: { auth } } } } = context
     const { headers } = request
@@ -13,7 +13,7 @@ export function jwtGuard(User: UserService): P.Guard {
     try {
       const decodedToken: any = jwt.verify(headers.authorization || '', process.env.SECRET)
 
-      const user = await User.findById(decodedToken.userId)
+      const user = await UserModel.findById(decodedToken.userId)
 
       if (!user)
         throw new NotFoundException('can\t find user');

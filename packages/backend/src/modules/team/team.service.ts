@@ -1,26 +1,23 @@
-import { Tag } from 'phecda-server'
-import { mongoose } from '@typegoose/typegoose'
-import { BaseSerice } from '../base/base.module'
-import { UserService } from '../user/user.service'
-import type { TeamEntity } from './team.model'
+import { BadRequestException } from 'phecda-server'
+import type { NamespaceService } from '../namespace/namespace.service'
+import type { UserDTO, UserDoc } from '../user/user.model'
+import type { TeamDoc, TeamVO } from './team.model'
 import { TeamModel } from './team.model'
 
-@Tag('team')
-export class TeamService extends BaseSerice<typeof TeamEntity> {
-  Model = TeamModel
+export class TeamService {
+  constructor(protected namespaceService: NamespaceService) {
 
-  constructor(protected userService: UserService) {
-    super()
   }
 
-  addUser(teamId: string, userId: string) {
-    const user = this.userService.findById(userId)
-    if (!user)
-      throw new Error('不存在对应用户')
-    return this.Model.updateOne({ _id: new mongoose.Types.ObjectId(teamId) }, {
-      users: {
-        $push: user,
-      },
-    })
+  async create(data: TeamVO, user: UserDTO) {
+    const team = await TeamModel.create({ ...data, owner: user, creator: user, users: [user] })
+    await this.namespaceService.create({ name: 'default' }, team, team.owner as UserDTO)
+
+    return team
+  }
+
+  async isValid(team: TeamDoc, user: UserDoc) {
+    if (!team.users.includes(user._id))
+      throw new BadRequestException('只有团队内的用户可以操作团队所属')
   }
 }

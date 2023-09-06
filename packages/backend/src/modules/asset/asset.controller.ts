@@ -1,24 +1,30 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from 'phecda-server'
+import { FilterQuery } from 'mongoose'
 import { Auth } from '../../decorators/auth'
+import type { NamespaceDTO } from '../namespace/namespace.model'
 import { NamespaceModel } from '../namespace/namespace.model'
-import type { TeamEntity } from '../team/team.model'
-import { AssetEntity, AssetModel } from './asset.model'
+import type { TeamDTO } from '../team/team.model'
+import { TeamService } from '../team/team.service'
+import type { AssetDTO } from './asset.model'
+import { AssetModel, AssetVO } from './asset.model'
+import { AssetService } from './asset.service'
 
 @Auth()
 @Controller('/asset')
-export class AssetController {
+export class AssetController<Data = any> {
   protected context: any
 
-  protected async isValid(namespace: any, user: any) {
-    if (!(namespace.team as TeamEntity).users.includes(user.id))
-      throw new NotFoundException('只有团队内的用户可以操作团队所属的命名空间')
+  constructor(protected assetService: AssetService, protected teamService: TeamService) {
+
   }
 
   @Get('')
   async findByNamespace(@Query('namespaceId') namespaceId: string) {
     const { request: { user } } = this.context
-    const namespace = await NamespaceModel.findById(namespaceId)
-    await this.isValid(namespace, user)
+    const namespace = await NamespaceModel.findById(namespaceId).populate('team')
+    if (!namespace)
+      throw new NotFoundException('不存在对应namespace')
+    await this.teamService.isValid(namespace.team as TeamDTO, user)
 
     const ret = await AssetModel.find({
       namespace,
@@ -27,42 +33,60 @@ export class AssetController {
     return ret.map(item => item.toJSON())
   }
 
+  @Post('/query')
+
+  async query(@Body() query: FilterQuery<AssetDTO>) {
+    const { request: { user } } = this.context
+
+    const assets = await AssetModel.find(query).populate({ path: 'namespace', populate: { path: 'team' } })
+    if (!assets)
+      throw new NotFoundException('没有对应id的asset')
+
+    assets.forEach(asset => this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user))
+
+    return assets.map(assert => assert.toJSON())
+  }
+
   @Get('/:id')
   async findById(@Param('id') id: string) {
     const { request: { user } } = this.context
 
-    const ret = await AssetModel.findById(id).populate({ path: 'namespace', populate: { path: 'team' } })
-    if (!ret)
+    const asset = await AssetModel.findById(id).populate({ path: 'namespace', populate: { path: 'team' } })
+    if (!asset)
       throw new NotFoundException('没有对应id的asset')
-    await this.isValid(ret.namespace, user)
+    await this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user)
 
-    return ret.toJSON()
+    return asset.toJSON()
   }
 
   @Post('')
-  async create(@Body() data: AssetEntity, @Query('namespace') namespaceId: string) {
+  async create(@Body() data: AssetVO<Data>, @Query('namespace') namespaceID: string) {
     const { request: { user } } = this.context
-    const namespace = await NamespaceModel.findById(namespaceId).populate('team')
+    const namespace = await NamespaceModel.findById(namespaceID).populate('team')
 
     if (!namespace)
       throw new NotFoundException('无对应id的team')
-    await this.isValid(namespace, user)
-    data.namespace = namespace
-    data.owner = data.creator = user
-    const ret = await AssetModel.create(data)
+    await this.teamService.isValid(namespace.team as TeamDTO, user)
+    const ret = await this.assetService.create(data, namespace, user)
     return ret.toJSON()
   }
 
   @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: AssetEntity) {
+  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
-    const ret = await AssetModel.findById(id).populate('namespace')
+    const asset = await AssetModel.findById(id).populate({
+      path: 'namespace',
+      populate: {
+        path: 'team',
+      },
+    })
 
-    if (!ret)
+    if (!asset)
       throw new NotFoundException('无对应id的asset')
-    await this.isValid(ret.namespace, user)
-    await ret.updateOne(data)
+
+    await this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user)
+    await asset.updateOne({ data })
 
     return true
   }
@@ -71,12 +95,12 @@ export class AssetController {
   async deleteById(@Param('id') id: string) {
     const { request: { user } } = this.context
 
-    const ret = await AssetModel.findById(id).populate('namespace')
+    const asset = await AssetModel.findById(id).populate('namespace')
 
-    if (!ret)
+    if (!asset)
       throw new NotFoundException('无对应id的asset')
-    await this.isValid(ret.namespace, user)
-    ret.deleteOne()
+    await this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user)
+    asset.deleteOne()
     return true
   }
 }

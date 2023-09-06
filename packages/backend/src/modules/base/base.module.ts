@@ -2,14 +2,14 @@ import { Ref, prop } from '@typegoose/typegoose'
 import type { ReturnModelType } from '@typegoose/typegoose'
 import { NotFoundException } from 'phecda-server'
 import type { FilterQuery } from 'mongoose'
-import { UserEntity } from '../user/user.model'
+import { UserDTO } from '../user/user.model'
 
 export class BaseModel {
-  @prop({ required: true, ref: () => UserEntity })
-  creator: Ref<UserEntity>
+  @prop({ required: true, ref: () => UserDTO })
+  creator: Ref<UserDTO>
 
-  @prop({ ref: () => UserEntity })
-  owner: Ref<UserEntity>
+  @prop({ ref: () => UserDTO })
+  owner: Ref<UserDTO>
 }
 
 export abstract class BaseSerice<T extends typeof BaseModel> {

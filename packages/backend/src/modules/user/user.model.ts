@@ -1,21 +1,12 @@
 import { getModelForClass, prop } from '@typegoose/typegoose'
 import { hashSync } from 'bcryptjs'
-import type { Types } from 'mongoose'
 import { Rule } from 'phecda-server'
+import { Any } from '../../decorators/faker'
 
-// export enum Permission {
-//   ADMIN = 'admin',
-//   USER = 'user',
-// }
-class UserEntity {
-  _id!: Types.ObjectId
+export class UserDTO {
+  _id: string
 
-  @Rule((str: any) => str, '名称不能为空')
-  @prop({ required: true })
-  name!: string
-
-  @Rule((str: string) => /^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$/.test(str), 'email不合法')
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   email!: string
 
   @prop({
@@ -27,8 +18,22 @@ class UserEntity {
     },
   })
   password!: string
+
+  @prop()
+  data!: string
+}
+export class UserVO<Data> {
+  @Rule((str: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(str), 'email不合法')
+
+  email!: string
+
+  @Rule((str: any) => str.length >= 6, '密码长度需大于等于6')
+  password!: string
+
+  @Any
+  data?: Data
 }
 
-const UserModel = getModelForClass(UserEntity)
+export const UserModel = getModelForClass(UserDTO)
 
-export { UserEntity, UserModel }
+export type UserDoc = InstanceType<typeof UserModel>

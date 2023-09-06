@@ -1,27 +1,13 @@
-import { BadRequestException, Tag } from 'phecda-server'
-
-import type { Ref } from '@typegoose/typegoose'
-import mongoose from 'mongoose'
-import type { TeamEntity } from '../team/team.model'
-import { BaseSerice } from '../base/base.module'
-import type { UserEntity } from '../user/user.model'
-import type { NamespaceEntity } from './namespace.model'
+import { BadRequestException } from 'phecda-server'
+import type { TeamDoc } from '../team/team.model'
+import type { UserDoc } from '../user/user.model'
 import { NamespaceModel } from './namespace.model'
-
-@Tag('namespace')
-export class NamespaceService extends BaseSerice<typeof NamespaceEntity> {
-  Model = NamespaceModel
-
-  async findByTeam(name: string, team: Ref<TeamEntity>) {
-    return NamespaceModel.find({ name, team })
-  }
-
-  async findByUserAndTeam(user: Ref<UserEntity>, team: string) {
-    return NamespaceModel.find({
-      team: new mongoose.Types.ObjectId(team),
-      users: {
-        $in: [user],
-      },
+export class NamespaceService {
+  async create(data: { name: string; data?: any }, team: TeamDoc, user: UserDoc) {
+    if (await NamespaceModel.findOne({ name: data.name }))
+      throw new BadRequestException('已存在同名空间')
+    return NamespaceModel.create({
+      ...data, team, creator: user, owner: user,
     })
   }
 }
