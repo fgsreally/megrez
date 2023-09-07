@@ -3,7 +3,7 @@ import { hashSync } from 'bcryptjs'
 import { Rule } from 'phecda-server'
 import { Any } from '../../decorators/faker'
 
-export class UserDTO {
+export class UserDTO<Data = any> {
   _id: string
 
   @prop({ required: true, unique: true })
@@ -20,9 +20,9 @@ export class UserDTO {
   password!: string
 
   @prop()
-  data!: string
+  data!: Data
 }
-export class UserVO<Data> {
+export class UserVO<Data = any> {
   @Rule((str: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(str), 'email不合法')
 
   email!: string

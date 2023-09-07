@@ -14,7 +14,7 @@ import { AssetService } from './asset.service'
 export class AssetController<Data = any> {
   protected context: any
 
-  constructor(protected assetService: AssetService, protected teamService: TeamService) {
+  constructor(protected assetService: AssetService<Data>, protected teamService: TeamService) {
 
   }
 
@@ -30,7 +30,7 @@ export class AssetController<Data = any> {
       namespace,
     })
 
-    return ret.map(item => item.toJSON())
+    return ret.map(item => item.toJSON()) as AssetDTO<Data>[]
   }
 
   @Post('/query')
@@ -44,7 +44,7 @@ export class AssetController<Data = any> {
 
     assets.forEach(asset => this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user))
 
-    return assets.map(assert => assert.toJSON())
+    return assets.map(assert => assert.toJSON()) as AssetDTO<Data>[]
   }
 
   @Get('/:id')
@@ -56,7 +56,7 @@ export class AssetController<Data = any> {
       throw new NotFoundException('没有对应id的asset')
     await this.teamService.isValid((asset.namespace as NamespaceDTO).team as TeamDTO, user)
 
-    return asset.toJSON()
+    return asset.toJSON() as AssetDTO<Data>
   }
 
   @Post('')
@@ -68,7 +68,7 @@ export class AssetController<Data = any> {
       throw new NotFoundException('无对应id的team')
     await this.teamService.isValid(namespace.team as TeamDTO, user)
     const ret = await this.assetService.create(data, namespace, user)
-    return ret.toJSON()
+    return ret.toJSON() as AssetDTO<Data>
   }
 
   @Put('/:id')

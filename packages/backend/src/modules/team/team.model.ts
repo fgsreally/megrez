@@ -7,6 +7,7 @@ import { Any } from '../../decorators/faker'
 
 export class TeamDTO extends BaseModel {
   _id: string
+  
   @prop({ required: true, unique: true })
   name!: string
 

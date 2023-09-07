@@ -1,10 +1,12 @@
-import { BadRequestException } from 'phecda-server'
-import type { NamespaceService } from '../namespace/namespace.service'
+import { BadRequestException, Tag } from 'phecda-server'
+import { NamespaceService } from '../namespace/namespace.service'
 import type { UserDTO, UserDoc } from '../user/user.model'
 import type { TeamDoc, TeamVO } from './team.model'
 import { TeamModel } from './team.model'
-
+@Tag('team')
 export class TeamService {
+  Model = TeamModel
+
   constructor(protected namespaceService: NamespaceService) {
 
   }

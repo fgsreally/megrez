@@ -1,5 +1,6 @@
 export * from './user/user.controller'
 export * from './user/user.model'
+export * from './user/user.service'
 
 export * from './team/team.controller'
 export * from './team/team.model'

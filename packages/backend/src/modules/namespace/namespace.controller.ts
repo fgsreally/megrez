@@ -33,7 +33,7 @@ export class NamespaceController<Data = any> {
       team,
     })
 
-    return ret.map(item => item.toJSON())
+    return ret.map(item => item.toJSON()) as NamespaceVO<Data>[]
   }
 
   @Get('/:id')
@@ -43,7 +43,7 @@ export class NamespaceController<Data = any> {
     if (!namespace)
       throw new NotFoundException('没有对应id的namespace')
     await this.teamService.isValid(namespace.team as TeamDTO, user)
-    return namespace!.toJSON()
+    return namespace!.toJSON() as NamespaceVO<Data>
   }
 
   @Post('/query')
@@ -57,7 +57,7 @@ export class NamespaceController<Data = any> {
 
     namespaces.forEach(namespace => this.teamService.isValid(namespace.team as TeamDTO, user))
 
-    return namespaces.map(namespace => namespace.toJSON())
+    return namespaces.map(namespace => namespace.toJSON()) as NamespaceVO<Data>[]
   }
 
   @Post('')
@@ -69,7 +69,7 @@ export class NamespaceController<Data = any> {
     if (!team.users.includes(user.id))
       throw new NotFoundException('只有团队内的用户可以查询团队所属的命名空间')
     const ret = await this.namespaceService.create(data, team, user)
-    return ret.toJSON()
+    return ret.toJSON() as NamespaceVO<Data>
   }
 
   @Put('/:id')
