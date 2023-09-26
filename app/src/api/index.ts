@@ -1,6 +1,7 @@
+import { createReq, useC } from 'phecda-client'
 import axios from 'axios'
 import { Message } from '@arco-design/web-vue'
-import { createReq } from 'phecda-client'
+import { AssetController, TeamController, UserController } from '../../../backend/src/modules'
 
 const instance = axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
 
@@ -22,3 +23,7 @@ instance.interceptors.request.use((config) => {
 )
 
 export const $request = createReq(instance)
+
+export const $asset = useC(AssetController)
+export const $user = useC(UserController)
+export const $team = useC(TeamController)

@@ -19,6 +19,8 @@ export * from './asset/asset.controller'
 export * from './asset/asset.model'
 export * from './asset/asset.service'
 
+export * from './file/file.controller'
+
 export * from '../guards/jwt'
 export * from '../decorators/auth'
 export * from '../decorators/faker'

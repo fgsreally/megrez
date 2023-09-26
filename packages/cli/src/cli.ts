@@ -1,7 +1,7 @@
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { createRequire } from 'module'
-import fs from 'fs'
+import fs from 'fs-extra'
 import cac from 'cac'
 import axios from 'axios'
 import { loadConfig } from 'unconfig'
@@ -185,6 +185,18 @@ cli.command('asset')
     }
   })
 
+cli.command('generate <module>')
+  .alias('g')
+  .option('-p,--pkg <pkg>', '', { default: 'typegoose' })
+  .option('-d,--dir <dir>', '', { default: '' }).action((module, { pkg, dir }) => {
+    const { graph } = require(resolve(__dirname, '../template/data.json'))
+    for (const path of graph[pkg][module]) {
+      const dest = resolve(process.cwd(), dir, path)
+      if (!fs.existsSync(dest))
+        fs.copy(resolve(__dirname, '../template', path), dest)
+    }
+    log(`生成${pkg}下的${module}模块`)
+  })
 cli.help()
 cli.version(pkg.version)
 

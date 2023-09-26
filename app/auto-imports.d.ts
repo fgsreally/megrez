@@ -5,7 +5,6 @@
 export {}
 declare global {
   const $request: typeof import('./src/api/axios')['$request']
-  const : typeof import('./src/types/global.d')['']
   const EffectScope: typeof import('vue')['EffectScope']
   const UserModel: typeof import('./src/models/user')['UserModel']
   const addAsset: typeof import('./src/api/asset')['addAsset']
