@@ -8,7 +8,7 @@ export function handleAsset(assets: AssetEntity[], config: Record<string, any>) 
     const node = {} as unknown as NodeConfig
     node.id = asset._id
     node.metadata = asset
-    Object.assign(node, config[asset.category] || {})
+    Object.assign(node, config[asset.type] || {})
     nodes.push(node)
     for (const dep of asset.dependences) {
       edges.push({

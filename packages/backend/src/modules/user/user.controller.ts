@@ -1,9 +1,8 @@
-import { Body, Controller, Define, Get, NotFoundException, Post, Put } from 'phecda-server'
-import jwt from 'jsonwebtoken'
-import { compareSync } from 'bcryptjs'
+import { Body, Controller, Define, Get, Post, Put, Query } from 'phecda-server'
+
 import { Auth } from '../../decorators/auth'
 import type { UserDTO } from './user.model'
-import { UserModel, UserVO } from './user.model'
+import { UserVO } from './user.model'
 import { UserService } from './user.service'
 
 @Controller('/user')
@@ -21,7 +20,7 @@ export class UserController<D> {
   }
 
   @Put('')
-  async update(@Body() data: D) {
+  async updateData(@Body() data: D) {
     const { user } = this.context.request
     await user.updateOne({ data })
     return user.toJSON() as Omit<UserDTO<D>, 'password'>
@@ -29,26 +28,34 @@ export class UserController<D> {
 
   @Define('auth', false)
   @Post('/login')
-  async login(@Body() { email, password }: UserVO<D>) {
-    // 检查邮箱是否已被注册
-    const existingUser = await UserModel.findOne({ email })
-    if (existingUser) {
-      if (!compareSync(password, existingUser.password))
-        throw new NotFoundException('密码不正确')
-      const token = jwt.sign({ userId: existingUser.id }, process.env.SECRET, {
-        expiresIn: '3650d',
-      })
-      return { token, ...existingUser.toJSON() as Omit<UserDTO<D>, 'password'> }
+  async login(@Body() vo: UserVO<D>) {
+    const user = await this.userService.loginFromPassword(vo)
+    return {
+      token: this.userService.createToken(user),
+      user: user.toJSON(),
     }
-    else {
-      const user = await this.userService.create({ email, password })
-      // 创建 JWT Token，并返回给客户端
-      const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
-        expiresIn: '3650d',
-      })
-      return { token, ...user.toJSON() as Omit<UserDTO<D>, 'password'> }
-    }
+    // 创建用户
+  }
 
+  @Define('auth', false)
+  @Post('/login/github')
+  async loginGithub(@Query('code') code: string) {
+    const user = await this.userService.loginFromGithub(code)
+    return {
+      token: this.userService.createToken(user),
+      user: user.toJSON(),
+    }
+    // 创建用户
+  }
+
+  @Define('auth', false)
+  @Post('/login/mail')
+  async loginMail(@Query('userId') userId: string, @Query('code') code: string) {
+    const user = await this.userService.loginFromCode(userId, code)
+    return {
+      token: this.userService.createToken(user!),
+      user: user!.toJSON(),
+    }
     // 创建用户
   }
 }

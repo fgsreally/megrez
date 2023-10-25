@@ -48,12 +48,12 @@ describe('User/Team/Namespace', async () => {
   it('add asset and create link', async () => {
     const asset1 = await Asset.create(user, {
       name: 'asset1',
-      category: 'test asset',
+      type: 'test asset',
       namespace,
     } as any)
     const asset2 = await Asset.create(user, {
       name: 'asset2',
-      category: 'test asset',
+      type: 'test asset',
       namespace,
     } as any)
     expect(await AssetModel.countDocuments()).toBe(2)

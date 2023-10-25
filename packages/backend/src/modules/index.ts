@@ -24,3 +24,5 @@ export * from './file/file.controller'
 export * from '../guards/jwt'
 export * from '../decorators/auth'
 export * from '../decorators/faker'
+
+export * from './record/record.model'

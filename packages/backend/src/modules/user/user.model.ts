@@ -4,12 +4,16 @@ import { Rule } from 'phecda-server'
 import { Any } from '../../decorators/faker'
 
 export class UserDTO<Data = any> {
-  _id: string
+  _id?: string
 
   @prop({ required: true, unique: true })
-  email!: string
+  uid!: string// email or sth else
+
+  @prop({ required: true })
+  name!: string// email or sth else
 
   @prop({
+    select: false,
     get(val) {
       return val
     },
@@ -17,7 +21,7 @@ export class UserDTO<Data = any> {
       return val ? hashSync(val) : val
     },
   })
-  password!: string
+  password?: string
 
   @prop()
   data!: Data

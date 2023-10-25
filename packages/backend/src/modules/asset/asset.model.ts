@@ -10,15 +10,15 @@ export class AssetDTO<Data = any> extends BaseModel {
   name!: string
 
   @prop({ required: true })
-  category!: string
+  type!: string
 
   @prop({ required: true, ref: () => NamespaceDTO })
   namespace!: Ref<NamespaceDTO>
 
-  @prop({ required: true, ref: () => AssetDTO, default: [] })
+  @prop({ ref: () => AssetDTO, default: [] })
   dependences!: Ref<AssetDTO>[]
 
-  @prop({ required: true, ref: () => AssetDTO, default: [] })
+  @prop({ ref: () => AssetDTO, default: [] })
   invokers!: Ref<AssetDTO>[]
 
   @prop({ default: {} })
@@ -30,7 +30,7 @@ export class AssetVO<Data = any> {
   name!: string
 
   @isString()
-  category!: string
+  type!: string
 
   @Any
   data!: Data
