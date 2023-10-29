@@ -26,3 +26,5 @@ export * from '../decorators/auth'
 export * from '../decorators/faker'
 
 export * from './record/record.model'
+export * from './record/record.service'
+export * from './record/record.controller'

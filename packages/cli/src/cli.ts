@@ -12,7 +12,7 @@ import { log } from './utils'
 const cli = cac('megrez')
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const require = createRequire(__dirname)
-const globalConfig = require('./assets/megrez.json')
+const globalConfig = require('../assets/megrez.json')
 
 const request = axios.create({
   baseURL: globalConfig.baseUrl,

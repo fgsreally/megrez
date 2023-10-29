@@ -10,8 +10,6 @@ import { TeamModel } from '../src/modules/team/team.model'
 import type { NamespaceEntity } from '../src/modules/namespace/namespace.model'
 import { NamespaceModel } from '../src/modules/namespace/namespace.model'
 import { AssetModel } from '../src/modules/asset/asset.model'
-import { MetaController } from '../src/modules/meta/meta.controller'
-import { MetaModel } from '../src/modules/meta/meta.model'
 import { ConfigModule } from './config.module'
 describe('User/Team/Namespace', async () => {
   const data = await Factory([
@@ -29,13 +27,23 @@ describe('User/Team/Namespace', async () => {
   const Namespace = data.moduleMap.get('namespace') as NamespaceService
   const Asset = data.moduleMap.get('asset') as AssetService
   const Meta = data.moduleMap.get('MetaController') as MetaController
-  it('create user/team/namespace', async () => {
-    user = await User.create('fgs', '1325041831../srcqq.com', '1111111')
-    expect(await UserModel.countDocuments()).toBe(1)
-    const team = await Team.create(user, 'test', '1111111')
-    expect(await TeamModel.countDocuments()).toBe(2)
-    namespace = await Namespace.create(user, 'test', team)
-    expect(await NamespaceModel.countDocuments()).toBe(1)
+  it('create user', async () => {
+    user = await User.create({
+      name: 'megrez',
+      uid: '1325041831../srcqq.com',
+      data: {},
+    })
+    expect(await User.Model.countDocuments()).toBe(1)
+    expect(await Team.Model.countDocuments()).toBe(1)
+    expect(await Namespace.Model.countDocuments()).toBe(1)
+  })
+
+  it('create Team', async () => {
+    await Team.create({
+      name: 'megrez', data: {},
+    }, user)
+    expect(await Team.Model.countDocuments()).toBe(2)
+    expect(await Namespace.Model.countDocuments()).toBe(2)
   })
   it('create meta', async () => {
     Meta.context = { request: { user } }

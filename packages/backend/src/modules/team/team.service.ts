@@ -1,7 +1,8 @@
 import { BadRequestException, Tag } from 'phecda-server'
+import type { DocumentType } from '@typegoose/typegoose'
 import { NamespaceService } from '../namespace/namespace.service'
 import type { UserDTO, UserDoc } from '../user/user.model'
-import type { TeamDoc, TeamVO } from './team.model'
+import type { TeamDTO, TeamVO } from './team.model'
 import { TeamModel } from './team.model'
 @Tag('team')
 export class TeamService {
@@ -18,8 +19,18 @@ export class TeamService {
     return team
   }
 
-  async isValid(team: TeamDoc, user: UserDoc) {
-    if (!team.users.includes(user._id))
+  async findOne(team: DocumentType<TeamDTO> | string, user: UserDoc, auth: 'user' | 'owner' = 'user') {
+    if (typeof team === 'string') {
+      const t = await TeamModel.findById(team).populate('user').populate('owner').populate('creator')
+      if (!t)
+        throw new BadRequestException(`不存在id-${team}的team`)
+
+      team = t
+    }
+    if (auth === 'user' && !team.users.some((u: any) => u._id === user._id!))
       throw new BadRequestException('只有团队内的用户可以操作团队所属')
+    if (auth === 'owner' && !((team.owner as any)._id === user._id))
+      throw new BadRequestException('只有团队内的用户可以操作团队所属')
+    return team
   }
 }
