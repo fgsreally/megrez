@@ -1,7 +1,7 @@
 import { BadRequestException, Tag } from 'phecda-server'
 import type { DocumentType } from '@typegoose/typegoose'
 import type { TeamDoc } from '../team/team.model'
-import type { UserDoc } from '../user/user.model'
+import type { UserDTO, UserDoc } from '../user/user.model'
 import { TeamService } from '../team/team.service'
 import type { NamespaceDTO } from './namespace.model'
 import { NamespaceModel } from './namespace.model'
@@ -21,7 +21,7 @@ export class NamespaceService {
     })
   }
 
-  async findOne(namespace: string | DocumentType<NamespaceDTO>, user: UserDoc, auth: 'user' | 'owner' = 'user') {
+  async findOne(namespace: string | DocumentType<NamespaceDTO>, user: DocumentType<UserDTO>, auth: 'user' | 'owner' = 'user') {
     if (typeof namespace === 'string') {
       const n = await NamespaceModel.findById(namespace).populate({
         path: 'team',

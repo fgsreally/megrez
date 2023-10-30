@@ -42,8 +42,10 @@ export class RecordController {
 
     const record = await this.recordService.findOne(recordId, user)
 
-    const ret = await record.updateOne({ data })
-    return ret.toJSON()
+    record.data = data
+    await record.save()
+
+    return record.toJSON()
   }
 
   @Delete('/:id')

@@ -4,8 +4,6 @@ import { Rule } from 'phecda-server'
 import { Any } from '../../decorators/faker'
 
 export class UserDTO<Data = any> {
-  _id?: string
-
   @prop({ required: true, unique: true })
   uid!: string// email or sth else
 
@@ -39,5 +37,3 @@ export class UserVO<Data = any> {
 }
 
 export const UserModel = getModelForClass(UserDTO)
-
-export type UserDoc = InstanceType<typeof UserModel>

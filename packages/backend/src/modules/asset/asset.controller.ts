@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from 'phecda-server'
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from 'phecda-server'
 import { Auth } from '../../decorators/auth'
 import { TeamService } from '../team/team.service'
 import { NamespaceService } from '../namespace/namespace.service'
+import { RecordModel } from '../record/record.model'
 import type { AssetDTO } from './asset.model'
-import { AssetModel, AssetVO } from './asset.model'
+import { AssetModel, AssetVO, LinkModel } from './asset.model'
 import { AssetService } from './asset.service'
 
 @Auth()
@@ -20,11 +21,14 @@ export class AssetController<Data = any> {
     const { request: { user } } = this.context
     const namespace = await this.namespaceService.findOne(namespaceId, user)
 
-    const ret = await AssetModel.find({
+    const assets = await AssetModel.find({
       namespace,
     })
-
-    return ret.map(item => item.toJSON()) as AssetDTO<Data>[]
+    const relations = await RecordModel.find({ namespace })
+    return {
+      assets: assets.map(item => item.toJSON()),
+      relations: relations.map(item => item.toJSON()),
+    }
   }
 
   @Get('/:id')
@@ -45,11 +49,12 @@ export class AssetController<Data = any> {
   }
 
   @Put('/:id')
-  async updateById(@Param('id') assetId: string, @Body() data: Partial<Data>) {
+  async updateById(@Param('id') assetId: string, @Body() data: Data) {
     const { request: { user } } = this.context
 
     const asset = await this.assetService.findOne(assetId, user)
-    await asset.updateOne({ data })
+    asset.data = data
+    await asset.save()
 
     return true
   }
@@ -62,5 +67,26 @@ export class AssetController<Data = any> {
 
     await asset.deleteOne()
     return true
+  }
+
+  @Post('/link')
+  async link(@Query('from') from: string, @Query('to') to: string) {
+    const { request: { user } } = this.context
+
+    const asset1 = await this.assetService.findOne(from, user)
+    const asset2 = await this.assetService.findOne(to, user)
+
+    await this.assetService.createLink(asset1, asset2)
+  }
+
+  @Delete('/link')
+  async deleteLink(@Query('id') id: string) {
+    const { request: { user } } = this.context
+    const link = await LinkModel.findById(id)
+    if (!link)
+      throw new BadRequestException('不存在对应的relation')
+
+    await this.namespaceService.findOne(link.namespace, user)
+    await this.assetService.deleteLink(id)
   }
 }

@@ -4,8 +4,6 @@ import { NamespaceDTO } from '../namespace/namespace.model'
 import { BaseModel } from '../base/base.module'
 
 export class AssetDTO<Data = any> extends BaseModel {
-  _id!: string
-
   @prop({ required: true })
   name!: string
 
@@ -15,15 +13,22 @@ export class AssetDTO<Data = any> extends BaseModel {
   @prop({ required: true, ref: () => NamespaceDTO })
   namespace!: Ref<NamespaceDTO>
 
-  @prop({ ref: () => AssetDTO, default: [] })
-  dependences!: Ref<AssetDTO>[]
-
-  @prop({ ref: () => AssetDTO, default: [] })
-  invokers!: Ref<AssetDTO>[]
-
   @prop({ default: {} })
   data!: Data
 }
+
+export class LinkDTO {
+  @prop({ ref: () => AssetDTO, required: true })
+  from!: Ref<AssetDTO>
+
+  @prop({ ref: () => AssetDTO, required: true })
+  to!: Ref<AssetDTO>
+
+  @prop({ ref: () => NamespaceDTO, required: true })
+  namespace!: Ref<NamespaceDTO>
+}
+
+export const LinkModel = getModelForClass(LinkDTO)
 
 export class AssetVO<Data = any> {
   @isString()

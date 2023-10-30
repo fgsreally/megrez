@@ -41,13 +41,13 @@ export class TeamController<Data = any> {
   }
 
   @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
+  async updateById(@Param('id') id: string, @Body() data: Data) {
     const { request: { user } } = this.context
     const team = await this.teamService.findOne(id, user, 'owner')
 
-    const ret = await team.updateOne({ data })
-
-    return ret.toJSON()
+    team.data = data
+    await team.save()
+    return team.toJSON()
   }
 
   @Delete('/:id')

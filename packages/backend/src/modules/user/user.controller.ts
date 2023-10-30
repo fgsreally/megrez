@@ -22,7 +22,8 @@ export class UserController<D> {
   @Put('')
   async updateData(@Body() data: D) {
     const { user } = this.context.request
-    await user.updateOne({ data })
+    user.data = data
+    await user.save()
     return user.toJSON() as Omit<UserDTO<D>, 'password'>
   }
 
