@@ -3,11 +3,14 @@ import { NamespaceDTO } from '../namespace/namespace.model'
 import { UserDTO } from '../user/user.model'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
-export class RecordDto<Data = any> {
+export class RecordDTO<Data = any> {
   createdAt?: Date
-
+  _id: string
   @prop({ required: true })
   type!: string
+
+  @prop({ required: true })
+  name!: string
 
   @prop({ ref: () => NamespaceDTO })
   namespace: Ref<NamespaceDTO>
@@ -19,4 +22,4 @@ export class RecordDto<Data = any> {
   data!: Data
 }
 
-export const RecordModel = getModelForClass(RecordDto)
+export const RecordModel = getModelForClass(RecordDTO)

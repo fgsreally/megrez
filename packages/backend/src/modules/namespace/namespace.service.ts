@@ -1,7 +1,7 @@
 import { BadRequestException, Tag } from 'phecda-server'
 import type { DocumentType } from '@typegoose/typegoose'
 import type { TeamDoc } from '../team/team.model'
-import type { UserDTO, UserDoc } from '../user/user.model'
+import type { UserDTO } from '../user/user.model'
 import { TeamService } from '../team/team.service'
 import type { NamespaceDTO } from './namespace.model'
 import { NamespaceModel } from './namespace.model'
@@ -13,7 +13,7 @@ export class NamespaceService {
 
   }
 
-  async create(data: { name: string; data?: any }, team: TeamDoc, user: UserDoc) {
+  async create(data: { name: string; data?: any }, team: TeamDoc, user: DocumentType<UserDTO>) {
     if (await NamespaceModel.findOne({ name: data.name, team }))
       throw new BadRequestException('已存在同名空间')
     return NamespaceModel.create({

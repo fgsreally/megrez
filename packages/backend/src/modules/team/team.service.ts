@@ -1,7 +1,6 @@
 import { BadRequestException, Tag } from 'phecda-server'
 import type { DocumentType } from '@typegoose/typegoose'
-import { NamespaceService } from '../namespace/namespace.service'
-import type { UserDTO, UserDoc } from '../user/user.model'
+import type { UserDTO } from '../user/user.model'
 import type { TeamDTO, TeamVO } from './team.model'
 import { TeamModel } from './team.model'
 @Tag('team')

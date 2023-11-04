@@ -49,11 +49,11 @@ export class AssetController<Data = any> {
   }
 
   @Put('/:id')
-  async updateById(@Param('id') assetId: string, @Body() data: Data) {
+  async updateById(@Param('id') assetId: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
     const asset = await this.assetService.findOne(assetId, user)
-    asset.data = data
+    asset.data = Object.assign(asset.data, data)
     await asset.save()
 
     return true

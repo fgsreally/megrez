@@ -1,0 +1,17 @@
+{
+  "name": "megrez-vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/lodash-es": "^4.17.10",
+    "lodash-es": "^4.17.21",
+    "vue": "^3.3.7"
+  }
+}

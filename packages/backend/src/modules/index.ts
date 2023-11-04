@@ -21,10 +21,10 @@ export * from './asset/asset.service'
 
 export * from './file/file.controller'
 
-export * from '../guards/jwt'
-export * from '../decorators/auth'
-export * from '../decorators/faker'
-
 export * from './record/record.model'
 export * from './record/record.service'
 export * from './record/record.controller'
+
+export * from './logger/logger.service'
+export * from './k8s/k8s.service'
+export * from './email/email.service'

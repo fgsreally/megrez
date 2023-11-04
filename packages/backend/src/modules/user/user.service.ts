@@ -86,7 +86,7 @@ export class UserService {
       return UserModel.findById(id)
   }
 
-  createToken(user: UserDTO) {
+  createToken(user: DocumentType<UserDTO>) {
     return jwt.sign({ userId: user._id }, process.env.SECRET, {
       expiresIn: process.env.JWT_TIMEOUT || '3650d',
     })

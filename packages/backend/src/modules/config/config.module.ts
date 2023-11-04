@@ -1,17 +1,21 @@
 import { Controller, Init } from 'phecda-server'
 import * as mongoose from 'mongoose'
-import { logger } from '../../utils/logger'
+import { Logger } from '../logger/logger.service'
 
 @Controller('/config')
 export class ConfigModule {
+  constructor(protected logger: Logger) {
+
+  }
+
   @Init
   async init() {
-    logger.log('start connect')
+    this.logger.info('start connect')
     if (process.env.TEST) {
       const mongo = await (await import('mongodb-memory-server')).MongoMemoryServer.create()
       process.env.DB_URL = mongo.getUri()
     }
     await mongoose.connect(process.env.DB_URL, { dbName: process.env.DB_NAME })
-    logger.log('connect db success')
+    this.logger.info('connect db success')
   }
 }

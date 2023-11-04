@@ -45,12 +45,12 @@ export class NamespaceController<Data = any> {
   }
 
   @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Data) {
+  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
     const namespace = await this.namespaceService.findOne(id, user, 'owner')
 
-    namespace.data = data
+    namespace.data = Object.assign(namespace.data, data)
     await namespace.save()
     return namespace.toJSON()
   }

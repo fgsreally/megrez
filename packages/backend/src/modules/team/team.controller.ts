@@ -41,11 +41,12 @@ export class TeamController<Data = any> {
   }
 
   @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Data) {
+  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
     const team = await this.teamService.findOne(id, user, 'owner')
 
-    team.data = data
+    team.data = Object.assign(team.data, data)
+
     await team.save()
     return team.toJSON()
   }

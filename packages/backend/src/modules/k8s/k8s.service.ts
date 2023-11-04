@@ -1,4 +1,13 @@
 import * as k8s from '@kubernetes/client-node'
+import type { KubernetesObject } from '@kubernetes/client-node'
+import { compare } from 'fast-json-patch'
+import type { Logger } from '../logger/logger.service'
+import { ApplicationNamespaceMode, type Region } from './type'
+import { GroupVersionKind } from './utils'
+
+const LABEL_KEY_USER_ID = 'megrez.dev/user.id'
+const LABEL_KEY_APP_ID = 'megrez.dev/appid'
+const LABEL_KEY_NAMESPACE_TYPE = 'megrez.dev/namespace.type'
 
 export function GetApplicationNamespace(region: Region, appid: string) {
   const conf = region.namespaceConf
@@ -13,6 +22,10 @@ export function GetApplicationNamespace(region: Region, appid: string) {
   return appid
 }
 export class BaseK8sService {
+  constructor(protected logger: Logger) {
+
+  }
+
   loadKubeConfig(region: Region) {
     const conf = region.clusterConf.kubeconfig
     const kc = new k8s.KubeConfig()
@@ -44,7 +57,7 @@ export class BaseK8sService {
       const res = await coreV1Api.createNamespace(namespace)
       return res.body
     }
-    catch (err) {
+    catch (err: any) {
       this.logger.error(err)
       this.logger.error(err?.response?.body)
       throw err
@@ -55,11 +68,11 @@ export class BaseK8sService {
   async getAppNamespace(region: Region, appid: string) {
     try {
       const coreV1Api = this.makeCoreV1Api(region)
-      const namespace = GetApplicationNamespace(region, appid)
+      const namespace = GetApplicationNamespace(region, appid)!
       const res = await coreV1Api.readNamespace(namespace)
       return res.body
     }
-    catch (err) {
+    catch (err: any) {
       if (err?.response?.body?.reason === 'NotFound')
         return null
       this.logger.error(err)
@@ -75,11 +88,11 @@ export class BaseK8sService {
 
     try {
       const coreV1Api = this.makeCoreV1Api(region)
-      const namespace = GetApplicationNamespace(region, appid)
+      const namespace = GetApplicationNamespace(region, appid)!
       const res = await coreV1Api.deleteNamespace(namespace)
       return res
     }
-    catch (err) {
+    catch (err: any) {
       this.logger.error(err)
       this.logger.error(err?.response?.body)
       throw err
@@ -94,9 +107,9 @@ export class BaseK8sService {
     const res = await client.getNamespacedCustomObject(
       gvk.group,
       gvk.version,
-      spec.metadata.namespace,
-      gvk.plural,
-      spec.metadata.name,
+      spec.metadata!.namespace!,
+      gvk.plural!,
+      spec.metadata!.name!,
     )
     const currentSpec = res.body as KubernetesObject
 
@@ -112,9 +125,9 @@ export class BaseK8sService {
     const response = await client.patchNamespacedCustomObject(
       gvk.group,
       gvk.version,
-      spec.metadata.namespace,
-      gvk.plural,
-      spec.metadata.name,
+      spec.metadata!.namespace!,
+      gvk.plural!,
+      spec.metadata!.name!,
       patch,
       undefined,
       undefined,
@@ -132,9 +145,9 @@ export class BaseK8sService {
     const response = await client.deleteNamespacedCustomObject(
       gvk.group,
       gvk.version,
-      spec.metadata.namespace,
-      gvk.plural,
-      spec.metadata.name,
+      spec.metadata.namespace!,
+      gvk.plural!,
+      spec.metadata.name!,
     )
 
     return response.body
@@ -147,7 +160,7 @@ export class BaseK8sService {
       const res = await api.readNamespacedIngress(name, namespace)
       return res.body
     }
-    catch (err) {
+    catch (err: any) {
       // if ingress not found, return null
       if (err?.response?.statusCode === 404)
         return null
@@ -158,11 +171,11 @@ export class BaseK8sService {
     }
   }
 
-  async createIngress(region: Region, body: V1Ingress) {
+  async createIngress(region: Region, body: k8s.V1Ingress) {
     body.apiVersion = 'networking.k8s.io/v1'
     body.kind = 'Ingress'
     const api = this.makeNetworkingApi(region)
-    const res = await api.createNamespacedIngress(body.metadata.namespace, body)
+    const res = await api.createNamespacedIngress(body.metadata!.namespace!, body)
     return res.body
   }
 
