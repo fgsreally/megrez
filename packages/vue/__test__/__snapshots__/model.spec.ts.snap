@@ -1,0 +1,83 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`model > async list model 1`] = `
+[
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
+
+exports[`model > async list model 2`] = `
+[
+  {
+    "id": 3,
+    "value": "new item1",
+  },
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
+
+exports[`model > async list model 3`] = `
+[
+  {
+    "id": 3,
+    "value": "new item1",
+  },
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
+
+exports[`model > sync list model 1`] = `
+[
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
+
+exports[`model > sync list model 2`] = `
+[
+  {
+    "id": 3,
+    "value": "new item1",
+  },
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
+
+exports[`model > sync list model 3`] = `
+[
+  {
+    "id": 3,
+    "value": "new item1",
+  },
+  {
+    "id": 1,
+  },
+  {
+    "id": 2,
+  },
+]
+`;
