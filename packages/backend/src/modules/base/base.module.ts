@@ -3,9 +3,10 @@ import type { ReturnModelType } from '@typegoose/typegoose'
 import { NotFoundException } from 'phecda-server'
 import type { FilterQuery } from 'mongoose'
 import { UserDTO } from '../user/user.model'
+import { Base } from '../../types/utils'
 
-export class BaseModel {
-  @prop({ required: true, ref: () => UserDTO })
+export class BaseModel extends Base {
+  @prop({ ref: () => UserDTO })
   creator: Ref<UserDTO>
 
   @prop({ ref: () => UserDTO })

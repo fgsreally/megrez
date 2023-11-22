@@ -1,0 +1,27 @@
+{
+  "name": "megrez-satellite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-proxy": "^1.18.1",
+    "nanoid": "^3",
+    "portfinder": "^1.0.32"
+  },
+  "devDependencies": {
+    "tsup": "^6.5.0",
+    "@types/http-proxy": "^1.17.11"
+  }
+}

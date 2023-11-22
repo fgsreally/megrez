@@ -1,16 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from 'phecda-server'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
 
 import { Auth } from '../../decorators/auth'
 
 import { TeamService } from '../team/team.service'
-import { NamespaceModel, NamespaceVO } from './namespace.model'
+import { DbModule } from '../db'
+import { NamespaceVO } from './namespace.model'
 import { NamespaceService } from './namespace.service'
 
 @Auth()
 @Controller('/namespace')
 export class NamespaceController<Data = any> {
   protected context: any
-  constructor(protected namespaceService: NamespaceService, protected teamService: TeamService) {
+  constructor(protected namespaceService: NamespaceService, protected teamService: TeamService, protected DB: DbModule) {
 
   }
 
@@ -20,7 +21,7 @@ export class NamespaceController<Data = any> {
 
     const team = await this.teamService.findOne(teamId, user)
 
-    const ret = await NamespaceModel.find({
+    const ret = await this.DB.namespace.find({
       team,
     })
 
@@ -44,7 +45,7 @@ export class NamespaceController<Data = any> {
     return ret.toJSON()
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 

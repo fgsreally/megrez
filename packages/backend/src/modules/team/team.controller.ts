@@ -1,21 +1,21 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from 'phecda-server'
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from 'phecda-server'
 import { Auth } from '../../decorators/auth'
-import { UserModel } from '../user/user.model'
-import { TeamModel, TeamVO } from './team.model'
+import { DbModule } from '../db'
+import { TeamVO } from './team.model'
 import { TeamService } from './team.service'
 
 @Controller('/team')
 @Auth()
 export class TeamController<Data = any> {
   context: any
-  constructor(protected teamService: TeamService) {
+  constructor(protected teamService: TeamService, protected DB: DbModule) {
 
   }
 
   @Get('')
   async findByUser() {
     const { request: { user } } = this.context
-    const ret = await TeamModel.find({
+    const ret = await this.DB.team.find({
       users: {
         $in: [user],
       },
@@ -26,7 +26,7 @@ export class TeamController<Data = any> {
 
   @Get('/:id')
   async findById(@Param('id') id: string) {
-    const ret = await TeamModel.findById(id)
+    const ret = await this.DB.team.findById(id)
     if (!ret)
       throw new NotFoundException('无对应id的team')
     return ret.toJSON()
@@ -40,13 +40,12 @@ export class TeamController<Data = any> {
     return ret.toJSON()
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
     const team = await this.teamService.findOne(id, user, 'owner')
 
     team.data = Object.assign(team.data, data)
-
     await team.save()
     return team.toJSON()
   }
@@ -62,11 +61,11 @@ export class TeamController<Data = any> {
   @Post('/user')
   async addUser(@Body('') { teamId, userId }: { teamId: string; userId: string }) {
     const { request: { user } } = this.context
-    const newUser = await UserModel.findById(userId)
+    const newUser = await this.DB.user.findById(userId)
     if (!newUser)
       throw new BadRequestException(`不存在对应用户${userId}`)
 
-    await TeamModel.updateOne({
+    await this.DB.team.updateOne({
       id: teamId,
       users: { $in: [user] },
     }, { $push: { users: newUser } })

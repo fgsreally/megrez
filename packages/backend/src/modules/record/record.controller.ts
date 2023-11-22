@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from 'phecda-server'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
 import { FilterQuery } from 'mongoose'
 import { Auth } from '../../decorators/auth'
 import { NamespaceService } from '../namespace/namespace.service'
+import { DbModule } from '../db'
 import { RecordService } from './record.service'
 import type { RecordDTO } from './record.model'
-import { RecordModel } from './record.model'
 
 @Auth()
 @Controller('/record')
 export class RecordController<Data = any> {
   context: any
-  constructor(private recordService: RecordService, private namespaceService: NamespaceService) { }
+  constructor(protected recordService: RecordService, protected namespaceService: NamespaceService, protected DB: DbModule) { }
   @Get('')
   async get(@Query('namespace') namespaceId: string, @Query('page') page: number, @Query('limit') limit: number) {
     const { request: { user } } = this.context
@@ -21,7 +21,7 @@ export class RecordController<Data = any> {
   }
 
   @Post('/query')
-  async query(@Body('namespace') namespaceId: string, @Body('query') query: FilterQuery<RecordDTO>, @Query('page') page: number, @Query('limit') limit: number) {
+  async query(@Body('namespace') namespaceId: string, @Body('query') query: FilterQuery<RecordDTO>, @Query('page', Number) page: number, @Query('limit', Number) limit: number) {
     const { request: { user } } = this.context
     const namespace = await this.namespaceService.findOne(namespaceId, user)
 
@@ -39,23 +39,23 @@ export class RecordController<Data = any> {
   }
 
   @Post('')
-  async create(@Body('data') data: { type: string; data: Data; name: string }, @Body('namespace') namespaceId: string) {
+  async create(@Body('data') data: { type: string; data: Data }, @Body('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
     const namespace = await this.namespaceService.findOne(namespaceId, user)
 
-    const ret = await RecordModel.create({ ...data, namespace, creator: user })
+    const ret = await this.DB.record.create({ ...data, namespace, creator: user })
     return ret
   }
 
-  @Post('/:id')
+  @Patch('/:id')
   async updateById(@Param('id') recordId: string, @Body('data') data: Partial<Data>) {
     const { request: { user } } = this.context
 
     const record = await this.recordService.findOne(recordId, user)
-
     record.data = Object.assign(record.data, data)
-    await record.save()
+
+    await this.DB.record.findByIdAndUpdate(recordId, record, { new: true })
 
     return record.toJSON()
   }

@@ -1,29 +1,27 @@
 import { BadRequestException, Tag } from 'phecda-server'
 import type { DocumentType } from '@typegoose/typegoose'
-import type { TeamDoc } from '../team/team.model'
 import type { UserDTO } from '../user/user.model'
 import { TeamService } from '../team/team.service'
+import { DbModule } from '../db'
+import type { TeamDTO } from '../team/team.model'
 import type { NamespaceDTO } from './namespace.model'
-import { NamespaceModel } from './namespace.model'
 @Tag('namespace')
 export class NamespaceService {
-  Model = NamespaceModel
-
-  constructor(private teamService: TeamService) {
+  constructor(protected DB: DbModule, protected teamService: TeamService) {
 
   }
 
-  async create(data: { name: string; data?: any }, team: TeamDoc, user: DocumentType<UserDTO>) {
-    if (await NamespaceModel.findOne({ name: data.name, team }))
+  async create(data: { name: string; data?: any }, team: DocumentType<TeamDTO>, user: DocumentType<UserDTO>) {
+    if (await this.DB.namespace.findOne({ name: data.name, team }))
       throw new BadRequestException('已存在同名空间')
-    return NamespaceModel.create({
+    return this.DB.namespace.create({
       ...data, team, creator: user, owner: user,
     })
   }
 
   async findOne(namespace: string | DocumentType<NamespaceDTO>, user: DocumentType<UserDTO>, auth: 'user' | 'owner' = 'user') {
     if (typeof namespace === 'string') {
-      const n = await NamespaceModel.findById(namespace).populate({
+      const n = await this.DB.namespace.findById(namespace).populate({
         path: 'team',
         populate: 'users',
       })
@@ -32,7 +30,7 @@ export class NamespaceService {
       namespace = n
     }
 
-    namespace.team = await this.teamService.findOne(namespace.team, user, auth)
+    namespace.team = await this.teamService.findOne(namespace.team.toString(), user, auth)
 
     return namespace
   }

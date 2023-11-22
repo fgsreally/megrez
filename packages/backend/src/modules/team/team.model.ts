@@ -1,18 +1,19 @@
 import type { Ref } from '@typegoose/typegoose'
-import { getModelForClass, prop } from '@typegoose/typegoose'
+import { prop } from '@typegoose/typegoose'
 import { Rule } from 'phecda-server'
 import { BaseModel } from '../base/base.module'
 import { UserDTO } from '../user/user.model'
 import { Any } from '../../decorators/faker'
 
 export class TeamDTO extends BaseModel {
-  _id: string
-
   @prop({ required: true, unique: true })
   name!: string
 
   @prop({ required: true, ref: () => UserDTO })
   users!: Ref<UserDTO>[]
+
+  @prop({ default: false })
+  protected!: boolean
 
   @prop()
   data!: any
@@ -25,5 +26,3 @@ export class TeamVO {
   @Any
   data?: any
 }
-export const TeamModel = getModelForClass(TeamDTO)
-export type TeamDoc = InstanceType<typeof TeamModel>

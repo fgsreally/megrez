@@ -5,7 +5,7 @@ import { DataMap } from 'phecda-server'
 export class Logger {
   logger: WLoger
   constructor() {
-    this.logger = createLogger(DataMap['megrez:logger-opts'] || {
+    this.logger = createLogger(DataMap['megrez:logger'] || {
       level: 'info',
       transports: [
         new transports.Console({

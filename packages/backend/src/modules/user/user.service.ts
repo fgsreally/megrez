@@ -4,35 +4,34 @@ import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import type { DocumentType } from '@typegoose/typegoose'
 import type { UserDTO, UserVO } from '../user/user.model'
-import { UserModel } from '../user/user.model'
 import { TeamService } from '../team/team.service'
+import { DbModule } from '../db'
 import { ValidateCodeService } from './validateCode.service'
 
 @Tag('user')
 export class UserService {
-  Model = UserModel
   admin: DocumentType<UserDTO>
-  constructor(protected teamService: TeamService, protected codeService: ValidateCodeService) {
+  constructor(protected DB: DbModule, protected teamService: TeamService, protected codeService: ValidateCodeService) {
 
   }
 
   @Init
   async init() {
-    const admin = await UserModel.findOne({ uid: '0' })
+    const admin = await this.DB.user.findOne({ uid: '0' })
     if (!admin)
-      this.admin = await UserModel.create({ uid: '0', name: 'admin' })
+      this.admin = await this.DB.user.create({ uid: '0', name: 'admin' })
     else
       this.admin = admin
   }
 
   async create(userInfo: UserDTO) {
-    const user = await UserModel.create(userInfo)
-    await this.teamService.create({ name: userInfo.uid }, user)
+    const user = await this.DB.user.create(userInfo)
+    await this.teamService.create({ name: userInfo.uid, protected: true }, user)
     return user
   }
 
   async loginFromPassword({ email, password, data = {} }: UserVO) {
-    const existingUser = await UserModel.findOne({ uid: email })
+    const existingUser = await this.DB.user.findOne({ uid: email })
     if (existingUser) {
       if (!compareSync(password, existingUser.password!))
         throw new NotFoundException('密码不正确')
@@ -69,7 +68,7 @@ export class UserService {
       },
     })
     const { id, login, name } = result.data
-    const existingUser = await UserModel.findOne({ uid: id })
+    const existingUser = await this.DB.user.findOne({ uid: id })
 
     if (existingUser)
       return existingUser
@@ -83,7 +82,7 @@ export class UserService {
 
   async loginFromCode(id: string, code: string) {
     if (code === this.codeService.getCode(id))
-      return UserModel.findById(id)
+      return this.DB.user.findById(id)
   }
 
   createToken(user: DocumentType<UserDTO>) {

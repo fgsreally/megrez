@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from 'phecda-server'
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
 import { Auth } from '../../decorators/auth'
 import { TeamService } from '../team/team.service'
 import { NamespaceService } from '../namespace/namespace.service'
-import { RecordModel } from '../record/record.model'
+import { DbModule } from '../db'
 import type { AssetDTO } from './asset.model'
-import { AssetModel, AssetVO, LinkModel } from './asset.model'
+import { AssetVO } from './asset.model'
 import { AssetService } from './asset.service'
 
 @Auth()
@@ -12,7 +12,7 @@ import { AssetService } from './asset.service'
 export class AssetController<Data = any> {
   protected context: any
 
-  constructor(protected assetService: AssetService<Data>, protected teamService: TeamService, protected namespaceService: NamespaceService) {
+  constructor(protected DB: DbModule, protected assetService: AssetService<Data>, protected teamService: TeamService, protected namespaceService: NamespaceService) {
 
   }
 
@@ -21,10 +21,10 @@ export class AssetController<Data = any> {
     const { request: { user } } = this.context
     const namespace = await this.namespaceService.findOne(namespaceId, user)
 
-    const assets = await AssetModel.find({
+    const assets = await this.DB.asset.find({
       namespace,
     })
-    const relations = await RecordModel.find({ namespace })
+    const relations = await this.DB.record.find({ namespace })
     return {
       assets: assets.map(item => item.toJSON()),
       relations: relations.map(item => item.toJSON()),
@@ -48,7 +48,7 @@ export class AssetController<Data = any> {
     return ret.toJSON() as AssetDTO<Data>
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   async updateById(@Param('id') assetId: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
@@ -82,7 +82,7 @@ export class AssetController<Data = any> {
   @Delete('/link')
   async deleteLink(@Query('id') id: string) {
     const { request: { user } } = this.context
-    const link = await LinkModel.findById(id)
+    const link = await this.DB.link.findById(id)
     if (!link)
       throw new BadRequestException('不存在对应的relation')
 

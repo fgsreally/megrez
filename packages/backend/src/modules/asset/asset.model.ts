@@ -1,4 +1,4 @@
-import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
+import { type Ref, prop } from '@typegoose/typegoose'
 import { Any, isString } from '../../decorators/faker'
 import { NamespaceDTO } from '../namespace/namespace.model'
 import { BaseModel } from '../base/base.module'
@@ -28,8 +28,6 @@ export class LinkDTO {
   namespace!: Ref<NamespaceDTO>
 }
 
-export const LinkModel = getModelForClass(LinkDTO)
-
 export class AssetVO<Data = any> {
   @isString()
   name!: string
@@ -40,5 +38,3 @@ export class AssetVO<Data = any> {
   @Any
   data!: Data
 }
-
-export const AssetModel = getModelForClass(AssetDTO)

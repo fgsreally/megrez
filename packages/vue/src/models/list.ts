@@ -41,16 +41,6 @@ export class ListModel<T extends object> {
     this._ALL.add(item)
   }
 
-  // push(item: T) {
-  //   if (this.has(item))
-  //     return
-  //   if (!this.validate(item))
-
-  //     return
-  //   this.value.push(item)
-  //   this._ADD.add(item)
-  // }
-
   protected _add(item: T) {
     this._ALL.add(item)
     this.value.unshift(item)
@@ -89,7 +79,7 @@ export class ListModel<T extends object> {
   }
 }
 
-export abstract class SyncListModel<T extends object> extends ListModel<T> {
+export abstract class SyncListModel<T extends object, A = any> extends ListModel<T> {
   merge(item: T, part: Partial<T>) {
     if (!this.has(item))
       return
@@ -162,9 +152,9 @@ export abstract class SyncListModel<T extends object> extends ListModel<T> {
     })
   }
 
-  async pull() {
+  async pull(arg: A) {
     await this.isLocked
-    this.isLocked = this.find()
+    this.isLocked = this.find(arg)
     this.value = await this.isLocked
 
     this.isLocked = false
@@ -173,10 +163,10 @@ export abstract class SyncListModel<T extends object> extends ListModel<T> {
   abstract create(item: T): Promise<void>
   abstract delete(item: T): Promise<void>
   abstract update(item: T): Promise<void>
-  abstract find(): Promise<T[]>
+  abstract find(arg: A): Promise<T[]>
 }
 
-export abstract class AsyncListModel<T extends object> extends ListModel<T> {
+export abstract class AsyncListModel<T extends object, A = any> extends ListModel<T> {
   merge(item: T, part: Partial<T>) {
     if (!this.has(item))
       return
@@ -266,9 +256,9 @@ export abstract class AsyncListModel<T extends object> extends ListModel<T> {
     })
   }
 
-  async pull() {
+  async pull(arg: A) {
     await this.isLocked
-    this.isLocked = this.find()
+    this.isLocked = this.find(arg)
     this.value = await this.isLocked
 
     this.isLocked = false
@@ -277,5 +267,5 @@ export abstract class AsyncListModel<T extends object> extends ListModel<T> {
   abstract create(item: T): Promise<void>
   abstract delete(item: T): Promise<void>
   abstract update(item: T): Promise<void>
-  abstract find(): Promise<T[]>
+  abstract find(arg: A): Promise<T[]>
 }

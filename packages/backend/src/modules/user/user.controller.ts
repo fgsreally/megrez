@@ -1,4 +1,4 @@
-import { Body, Controller, Define, Get, Post, Put, Query } from 'phecda-server'
+import { Body, Controller, Define, Get, Patch, Post, Query } from 'phecda-server'
 
 import { Auth } from '../../decorators/auth'
 import type { UserDTO } from './user.model'
@@ -19,7 +19,7 @@ export class UserController<D> {
     return this.context.request.user as Omit<UserDTO<D>, 'password'>
   }
 
-  @Put('')
+  @Patch('')
   async updateData(@Body() data: D) {
     const { user } = this.context.request
     user.data = data

@@ -10,7 +10,7 @@ export * from './namespace/namespace.controller'
 export * from './namespace/namespace.model'
 export * from './namespace/namespace.service'
 
-export * from './config/config.module'
+export * from './db'
 
 export * from './base/base.module'
 export * from './base/base.controller'

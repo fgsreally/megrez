@@ -1,4 +1,4 @@
-import { Body, Delete, Get, NotFoundException, Param, Post, Put, Query } from 'phecda-server'
+import { Body, Delete, Get, NotFoundException, Param, Patch, Post, Query } from 'phecda-server'
 import type { BaseSerice } from './base.module'
 
 export class BaseController<S extends BaseSerice<any>> {
@@ -31,7 +31,7 @@ export class BaseController<S extends BaseSerice<any>> {
     return ret.toJSON()
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   async updateById(@Param('id') id: string, @Body() data: Parameters<S['updateById']>[1]) {
     const ret = await this.service.updateById(id, data)
     if (!ret)
