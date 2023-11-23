@@ -251,8 +251,8 @@ importers:
         specifier: ^6.9.7
         version: 6.9.7
       phecda-server:
-        specifier: 3.1.0
-        version: 3.1.0
+        specifier: 3.2.0-alpha.0
+        version: 3.2.0-alpha.0
       send:
         specifier: ^0.18.0
         version: 0.18.0
@@ -275,6 +275,9 @@ importers:
       '@types/multer':
         specifier: ^1.4.7
         version: 1.4.7
+      '@types/supertest':
+        specifier: ^2.0.16
+        version: 2.0.16
       '@types/unzipper':
         specifier: ^0.10.5
         version: 0.10.5
@@ -3133,6 +3136,10 @@ packages:
     dependencies:
       '@types/node': 18.17.1
 
+  /@types/cookiejar@2.1.5:
+    resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
+    dev: true
+
   /@types/d3-timer@2.0.1:
     resolution: {integrity: sha512-TF8aoF5cHcLO7W7403blM7L1T+6NF3XMyN3fxyUolq2uOcFeicG/khQg/dGxiCJWoAcmYulYN7LYSRKO54IXaA==}
     dev: false
@@ -3309,6 +3316,19 @@ packages:
     dependencies:
       '@types/mime': 3.0.1
       '@types/node': 18.17.1
+
+  /@types/superagent@4.1.22:
+    resolution: {integrity: sha512-GMaOrnnUsjChvH8zlzdDPARRXky8bU3E8xsU/fOclgqsINekbwDu1+wzJzJaGzZP91SGpOutf5Te5pm5M/qCWg==}
+    dependencies:
+      '@types/cookiejar': 2.1.5
+      '@types/node': 18.17.1
+    dev: true
+
+  /@types/supertest@2.0.16:
+    resolution: {integrity: sha512-6c2ogktZ06tr2ENoZivgm7YnprnhYE4ZoXGMY+oA7IuAf17M8FWvujXZGmxLv8y0PTyts4x5A+erSwVUFA8XSg==}
+    dependencies:
+      '@types/superagent': 4.1.22
+    dev: true
 
   /@types/tough-cookie@4.0.4:
     resolution: {integrity: sha512-95Sfz4nvMAb0Nl9DTxN3j64adfwfbBPEYq14VN7zT5J5O2M9V6iZMIIQU1U+pJyl9agHYHNCqhCXgyEtIRRa5A==}
@@ -8937,13 +8957,16 @@ packages:
     resolution: {integrity: sha512-RUXS5G0C5f6uVUuBT0Ga83ISBy0RvOJDGlOkd9aEDa77KeCHlcdAof8PNdu/7QdTu0o0VFPJ+6d3hQcqVmYWiw==}
     dev: false
 
-  /phecda-server@3.1.0:
-    resolution: {integrity: sha512-bUs9G1rWmjhLvL8NZ1SjlX/R09B9qFmPDh7cS9+sqE69xiW0j3jOXXqv8jORpCtSsBwlN5oyIfqjKYpl00k5LA==}
+  /phecda-server@3.2.0-alpha.0:
+    resolution: {integrity: sha512-xh9u2/jI8RZjgF26+cb//3xCDILdd1pk/HHi0HgAgf4C8IYcbxElu1wK9HDEyvzmIWJCBgiAI9ez6ri902JWNw==}
     hasBin: true
     dependencies:
+      debug: 4.3.4
       phecda-core: 2.0.0
       picocolors: 1.0.0
       reflect-metadata: 0.1.13
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /phecda-vue@1.6.2(typescript@5.0.4):

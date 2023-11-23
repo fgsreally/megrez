@@ -21,10 +21,7 @@ export class NamespaceService {
 
   async findOne(namespace: string | DocumentType<NamespaceDTO>, user: DocumentType<UserDTO>, auth: 'user' | 'owner' = 'user') {
     if (typeof namespace === 'string') {
-      const n = await this.DB.namespace.findById(namespace).populate({
-        path: 'team',
-        populate: 'users',
-      })
+      const n = await this.DB.namespace.findById(namespace)
       if (!n)
         throw new BadRequestException(`不存在id为${namespace}的namespace`)
       namespace = n

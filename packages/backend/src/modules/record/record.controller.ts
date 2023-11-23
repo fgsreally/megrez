@@ -20,6 +20,15 @@ export class RecordController<Data = any> {
     return records as RecordDTO<Data>[]
   }
 
+  @Post('')
+  async create(@Body() data: { type: string; data: Data }, @Query('namespace') namespaceId: string) {
+    const { request: { user } } = this.context
+    const namespace = await this.namespaceService.findOne(namespaceId, user)
+
+    const ret = await this.DB.record(namespaceId).create({ ...data, namespace, creator: user })
+    return ret
+  }
+
   @Post('/query')
   async query(@Body('namespace') namespaceId: string, @Body('query') query: FilterQuery<RecordDTO>, @Query('page', Number) page: number, @Query('limit', Number) limit: number) {
     const { request: { user } } = this.context
@@ -31,40 +40,28 @@ export class RecordController<Data = any> {
   }
 
   @Get('/:id')
-  async findById(@Param('id') recordId: string) {
+  async find(@Param('id') recordId: string, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
-    const record = await this.recordService.findOne(recordId, user)
+    const record = await this.recordService.findOne(recordId, namespaceId, user)
 
     return record.toJSON()
-  }
-
-  @Post('')
-  async create(@Body('data') data: { type: string; data: Data }, @Body('namespace') namespaceId: string) {
-    const { request: { user } } = this.context
-
-    const namespace = await this.namespaceService.findOne(namespaceId, user)
-
-    const ret = await this.DB.record.create({ ...data, namespace, creator: user })
-    return ret
   }
 
   @Patch('/:id')
-  async updateById(@Param('id') recordId: string, @Body('data') data: Partial<Data>) {
+  async patch(@Param('id') recordId: string, @Body('data') data: Partial<Data>, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
-    const record = await this.recordService.findOne(recordId, user)
+    const record = await this.recordService.findOne(recordId, namespaceId, user)
     record.data = Object.assign(record.data, data)
 
-    await this.DB.record.findByIdAndUpdate(recordId, record, { new: true })
-
-    return record.toJSON()
+    return (await this.DB.record(namespaceId).findByIdAndUpdate(recordId, record, { new: true }))!.toJSON()
   }
 
   @Delete('/:id')
-  async deleteById(@Param('id') recordId: string) {
+  async delete(@Param('id') recordId: string, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
-    const record = await this.recordService.findOne(recordId, user)
+    const record = await this.recordService.findOne(recordId, namespaceId, user)
 
     await record.deleteOne()
     return true

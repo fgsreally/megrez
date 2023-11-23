@@ -13,19 +13,11 @@ export class AssetDTO<Data = any> extends BaseModel {
   @prop({ required: true, ref: () => NamespaceDTO })
   namespace!: Ref<NamespaceDTO>
 
+  @prop({ default: [], ref: () => AssetDTO })
+  dependences!: Ref<AssetDTO>[]
+
   @prop({ default: {} })
   data!: Data
-}
-
-export class LinkDTO {
-  @prop({ ref: () => AssetDTO, required: true })
-  from!: Ref<AssetDTO>
-
-  @prop({ ref: () => AssetDTO, required: true })
-  to!: Ref<AssetDTO>
-
-  @prop({ ref: () => NamespaceDTO, required: true })
-  namespace!: Ref<NamespaceDTO>
 }
 
 export class AssetVO<Data = any> {

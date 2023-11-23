@@ -29,7 +29,7 @@ export class NamespaceController<Data = any> {
   }
 
   @Get('/:id')
-  async findById(@Param('id') id: string) {
+  async find(@Param('id') id: string) {
     const { request: { user } } = this.context
 
     const namespace = await this.namespaceService.findOne(id, user)
@@ -46,7 +46,7 @@ export class NamespaceController<Data = any> {
   }
 
   @Patch('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
+  async patch(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
     const namespace = await this.namespaceService.findOne(id, user, 'owner')
@@ -57,7 +57,7 @@ export class NamespaceController<Data = any> {
   }
 
   @Delete('/:id')
-  async deleteById(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     const { request: { user } } = this.context
 
     const namespace = await this.namespaceService.findOne(id, user, 'owner')

@@ -13,16 +13,16 @@ export class TeamDTO extends BaseModel {
   users!: Ref<UserDTO>[]
 
   @prop({ default: false })
-  protected!: boolean
+  private!: boolean
 
   @prop()
   data!: any
 }
 
-export class TeamVO {
+export class TeamVO<T> {
   @Rule((item: any) => !!item, '组织名不能为空')
   name!: string
 
   @Any
-  data?: any
+  data?: T
 }

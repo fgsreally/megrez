@@ -25,7 +25,7 @@ export class TeamController<Data = any> {
   }
 
   @Get('/:id')
-  async findById(@Param('id') id: string) {
+  async find(@Param('id') id: string) {
     const ret = await this.DB.team.findById(id)
     if (!ret)
       throw new NotFoundException('无对应id的team')
@@ -33,7 +33,7 @@ export class TeamController<Data = any> {
   }
 
   @Post('')
-  async create(@Body() data: TeamVO) {
+  async create(@Body() data: TeamVO<Data>) {
     const { request: { user } } = this.context
     const ret = await this.teamService.create(data, user)
 
@@ -41,7 +41,7 @@ export class TeamController<Data = any> {
   }
 
   @Patch('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
+  async patch(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
     const team = await this.teamService.findOne(id, user, 'owner')
 
@@ -51,7 +51,7 @@ export class TeamController<Data = any> {
   }
 
   @Delete('/:id')
-  async deleteById(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     const { request: { user } } = this.context
     const team = await this.teamService.findOne(id, user, 'owner')
     await team.deleteOne()

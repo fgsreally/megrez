@@ -26,7 +26,7 @@ export class UserService {
 
   async create(userInfo: UserDTO) {
     const user = await this.DB.user.create(userInfo)
-    await this.teamService.create({ name: userInfo.uid, protected: true }, user)
+    await this.teamService.create({ name: userInfo.uid, private: true }, user)
     return user
   }
 

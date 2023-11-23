@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
 import { Auth } from '../../decorators/auth'
 import { TeamService } from '../team/team.service'
 import { NamespaceService } from '../namespace/namespace.service'
@@ -21,38 +21,34 @@ export class AssetController<Data = any> {
     const { request: { user } } = this.context
     const namespace = await this.namespaceService.findOne(namespaceId, user)
 
-    const assets = await this.DB.asset.find({
+    const assets = await this.DB.asset(namespaceId).find({
       namespace,
     })
-    const relations = await this.DB.record.find({ namespace })
-    return {
-      assets: assets.map(item => item.toJSON()),
-      relations: relations.map(item => item.toJSON()),
-    }
+    return assets
   }
 
   @Get('/:id')
-  async findById(@Param('id') assetId: string) {
+  async findById(@Param('id') assetId: string, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
-    const asset = await this.assetService.findOne(assetId, user)
+    const asset = await this.assetService.findOne(assetId, namespaceId, user)
     return asset.toJSON() as AssetDTO<Data>
   }
 
   @Post('')
-  async create(@Body('data') data: AssetVO<Data>, @Query('namespace') namespace: string) {
+  async create(@Body('data') data: AssetVO<Data>, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
-    const n = await this.namespaceService.findOne(namespace, user)
+    await this.namespaceService.findOne(namespaceId, user)
 
-    const ret = await this.assetService.create(data, n, user)
+    const ret = await this.assetService.create(data, namespaceId, user)
     return ret.toJSON() as AssetDTO<Data>
   }
 
   @Patch('/:id')
-  async updateById(@Param('id') assetId: string, @Body() data: Partial<Data>) {
+  async updateById(@Param('id') assetId: string, @Body() data: Partial<Data>, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
-    const asset = await this.assetService.findOne(assetId, user)
+    const asset = await this.assetService.findOne(assetId, namespaceId, user)
     asset.data = Object.assign(asset.data, data)
     await asset.save()
 
@@ -60,33 +56,12 @@ export class AssetController<Data = any> {
   }
 
   @Delete('/:id')
-  async deleteById(@Param('id') assetId: string) {
+  async deleteById(@Param('id') assetId: string, @Query('namespace') namespaceId: string) {
     const { request: { user } } = this.context
 
-    const asset = await this.assetService.findOne(assetId, user)
+    const asset = await this.assetService.findOne(assetId, namespaceId, user)
 
     await asset.deleteOne()
     return true
-  }
-
-  @Post('/link')
-  async link(@Query('from') from: string, @Query('to') to: string) {
-    const { request: { user } } = this.context
-
-    const asset1 = await this.assetService.findOne(from, user)
-    const asset2 = await this.assetService.findOne(to, user)
-
-    await this.assetService.createLink(asset1, asset2)
-  }
-
-  @Delete('/link')
-  async deleteLink(@Query('id') id: string) {
-    const { request: { user } } = this.context
-    const link = await this.DB.link.findById(id)
-    if (!link)
-      throw new BadRequestException('不存在对应的relation')
-
-    await this.namespaceService.findOne(link.namespace, user)
-    await this.assetService.deleteLink(id)
   }
 }

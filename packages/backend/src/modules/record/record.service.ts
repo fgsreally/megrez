@@ -13,16 +13,16 @@ export class RecordService {
   }
 
   getByNamespace(namespace: NamespaceDTO, skip: number, limit: number) {
-    return this.DB.record.find({ namespace }).limit(limit).skip(skip)
+    return this.DB.record(namespace._id).find({ namespace }).limit(limit).skip(skip)
   }
 
   queryByNamespace(namespace: NamespaceDTO, query: FilterQuery<RecordDTO>, skip: number, limit: number) {
-    return this.DB.record.find(Object.assign(query, { namespace })).limit(limit).skip(skip)
+    return this.DB.record(namespace._id).find(Object.assign(query, { namespace })).limit(limit).skip(skip)
   }
 
-  async findOne(record: string | DocumentType<RecordDTO>, user: DocumentType<UserDTO>, auth: 'user' | 'owner' = 'user') {
+  async findOne(record: string | DocumentType<RecordDTO>, namespaceId: string, user: DocumentType<UserDTO>, auth: 'user' | 'owner' = 'user') {
     if (typeof record === 'string') {
-      const ret = await this.DB.record.findById(record)
+      const ret = await this.DB.record(namespaceId).findById(record)
       if (!ret)
         throw new BadRequestException(`不存在id为${record}的record`)
       record = ret
