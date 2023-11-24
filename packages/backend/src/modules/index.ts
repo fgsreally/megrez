@@ -10,7 +10,7 @@ export * from './namespace/namespace.controller'
 export * from './namespace/namespace.model'
 export * from './namespace/namespace.service'
 
-export * from './config/config.module'
+export * from './db'
 
 export * from './base/base.module'
 export * from './base/base.controller'
@@ -21,6 +21,10 @@ export * from './asset/asset.service'
 
 export * from './file/file.controller'
 
-export * from '../guards/jwt'
-export * from '../decorators/auth'
-export * from '../decorators/faker'
+export * from './record/record.model'
+export * from './record/record.service'
+export * from './record/record.controller'
+
+export * from './logger/logger.service'
+export * from './k8s/k8s.service'
+export * from './email/email.service'

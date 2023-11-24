@@ -1,35 +1,27 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from 'phecda-server'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from 'phecda-server'
 
-import { FilterQuery } from 'mongoose'
 import { Auth } from '../../decorators/auth'
 
-import type { TeamDTO } from '../team/team.model'
-import { TeamModel } from '../team/team.model'
 import { TeamService } from '../team/team.service'
-import type { NamespaceDTO } from './namespace.model'
-import { NamespaceModel, NamespaceVO } from './namespace.model'
+import { DbModule } from '../db'
+import { NamespaceVO } from './namespace.model'
 import { NamespaceService } from './namespace.service'
 
 @Auth()
 @Controller('/namespace')
 export class NamespaceController<Data = any> {
   protected context: any
-  constructor(protected namespaceService: NamespaceService, protected teamService: TeamService) {
+  constructor(protected namespaceService: NamespaceService, protected teamService: TeamService, protected DB: DbModule) {
 
   }
 
   @Get('')
-  async findByTeam(@Query('teamId') teamId: string) {
+  async findByTeam(@Query('team') teamId: string) {
     const { request: { user } } = this.context
 
-    const team = await TeamModel.findById(teamId)
-    if (!team)
-      throw new NotFoundException('不存在对应team')
+    const team = await this.teamService.findOne(teamId, user)
 
-    if (!team.users.includes(user.id))
-      throw new NotFoundException('只有团队内的用户可以查询团队所属的命名空间')
-
-    const ret = await NamespaceModel.find({
+    const ret = await this.DB.namespace.find({
       team,
     })
 
@@ -37,65 +29,39 @@ export class NamespaceController<Data = any> {
   }
 
   @Get('/:id')
-  async findById(@Param('id') id: string) {
+  async find(@Param('id') id: string) {
     const { request: { user } } = this.context
-    const namespace = await NamespaceModel.findById(id).populate('team')
-    if (!namespace)
-      throw new NotFoundException('没有对应id的namespace')
-    await this.teamService.isValid(namespace.team as TeamDTO, user)
+
+    const namespace = await this.namespaceService.findOne(id, user)
     return namespace!.toJSON() as NamespaceVO<Data>
-  }
-
-  @Post('/query')
-
-  async query(@Body() query: FilterQuery<NamespaceDTO>, @Query('teamId') teamId?: string) {
-    const { request: { user } } = this.context
-
-    const namespaces = await NamespaceModel.find({ team: teamId, ...query }).populate('team')
-    if (!namespaces)
-      throw new NotFoundException('没有对应id的namespace')
-
-    namespaces.forEach(namespace => this.teamService.isValid(namespace.team as TeamDTO, user))
-
-    return namespaces.map(namespace => namespace.toJSON()) as NamespaceVO<Data>[]
   }
 
   @Post('')
   async create(@Body() data: NamespaceVO<Data>) {
     const { request: { user } } = this.context
-    const team = await TeamModel.findById(data.team)
-    if (!team)
-      throw new NotFoundException('无对应id的team')
-    if (!team.users.includes(user.id))
-      throw new NotFoundException('只有团队内的用户可以查询团队所属的命名空间')
+    const team = await this.teamService.findOne(data.team, user)
+
     const ret = await this.namespaceService.create(data, team, user)
-    return ret.toJSON() as NamespaceVO<Data>
+    return ret.toJSON()
   }
 
-  @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
+  @Patch('/:id')
+  async patch(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
 
-    const namespace = await NamespaceModel.findById(id).populate('team')
+    const namespace = await this.namespaceService.findOne(id, user, 'owner')
 
-    if (!namespace)
-      throw new NotFoundException('不存在对应命名空间')
-    await this.teamService.isValid(namespace.team as TeamDTO, user)
-
-    await namespace!.updateOne({ data })
-
-    return true
+    namespace.data = Object.assign(namespace.data, data)
+    await namespace.save()
+    return namespace.toJSON()
   }
 
   @Delete('/:id')
-  async deleteById(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     const { request: { user } } = this.context
 
-    const namespace = await NamespaceModel.findById(id)
-    if (!namespace)
-      throw new NotFoundException('不存在对应命名空间')
+    const namespace = await this.namespaceService.findOne(id, user, 'owner')
 
-    await this.teamService.isValid(namespace.team as TeamDTO, user)
     await namespace!.deleteOne()
     return true
   }

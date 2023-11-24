@@ -1,13 +1,14 @@
-import { getModelForClass, prop } from '@typegoose/typegoose'
+import { prop } from '@typegoose/typegoose'
 import { hashSync } from 'bcryptjs'
 import { Rule } from 'phecda-server'
 import { Any } from '../../decorators/faker'
 
 export class UserDTO<Data = any> {
-  _id: string
-
   @prop({ required: true, unique: true })
-  email!: string
+  uid!: string// email or sth else
+
+  @prop({ required: true })
+  name!: string// email or sth else
 
   @prop({
     get(val) {
@@ -17,7 +18,7 @@ export class UserDTO<Data = any> {
       return val ? hashSync(val) : val
     },
   })
-  password!: string
+  password?: string
 
   @prop()
   data!: Data
@@ -33,7 +34,3 @@ export class UserVO<Data = any> {
   @Any
   data?: Data
 }
-
-export const UserModel = getModelForClass(UserDTO)
-
-export type UserDoc = InstanceType<typeof UserModel>

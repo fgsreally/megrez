@@ -1,4 +1,4 @@
-import { type Ref, getModelForClass, prop } from '@typegoose/typegoose'
+import { type Ref, prop } from '@typegoose/typegoose'
 import { TeamDTO } from '../team/team.model'
 import { BaseModel } from '../base/base.module'
 import { Any, isString } from '../../decorators/faker'
@@ -25,6 +25,3 @@ export class NamespaceVO<Data = any> {
   @Any
   data?: Data
 }
-
-export const NamespaceModel = getModelForClass(NamespaceDTO)
-export type NamespaceDoc = InstanceType<typeof NamespaceModel>

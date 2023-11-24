@@ -1,29 +1,21 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from 'phecda-server'
-import mongoose, { FilterQuery } from 'mongoose'
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } from 'phecda-server'
 import { Auth } from '../../decorators/auth'
-import type { TeamDTO } from './team.model'
-import { TeamModel, TeamVO } from './team.model'
+import { DbModule } from '../db'
+import { TeamVO } from './team.model'
 import { TeamService } from './team.service'
 
 @Controller('/team')
 @Auth()
 export class TeamController<Data = any> {
   context: any
-  constructor(protected teamService: TeamService) {
+  constructor(protected teamService: TeamService, protected DB: DbModule) {
 
-  }
-
-  protected async isValid(team: any, user: any) {
-    if (!team)
-      throw new NotFoundException('无对应id的team')
-    if (!team.users.includes(user.id))
-      throw new NotFoundException('只有团队内的用户可以操作团队所属的命名空间')
   }
 
   @Get('')
   async findByUser() {
     const { request: { user } } = this.context
-    const ret = await TeamModel.find({
+    const ret = await this.DB.team.find({
       users: {
         $in: [user],
       },
@@ -33,55 +25,50 @@ export class TeamController<Data = any> {
   }
 
   @Get('/:id')
-  async findById(@Param('id') id: string) {
-    const ret = await TeamModel.findById(id)
+  async find(@Param('id') id: string) {
+    const ret = await this.DB.team.findById(id)
     if (!ret)
       throw new NotFoundException('无对应id的team')
     return ret.toJSON()
   }
 
-  @Post('/query')
+  @Post('')
+  async create(@Body() data: TeamVO<Data>) {
+    const { request: { user } } = this.context
+    const ret = await this.teamService.create(data, user)
 
-  async query(@Body() query: FilterQuery<TeamDTO>) {
-    const teams = await TeamModel.find(query)
-    return teams.map(team => team.toJSON())
+    return ret.toJSON()
   }
 
-  @Post('')
-  async create(@Body() data: TeamVO) {
+  @Patch('/:id')
+  async patch(@Param('id') id: string, @Body() data: Partial<Data>) {
     const { request: { user } } = this.context
-    const team = await this.teamService.create(data, user)
+    const team = await this.teamService.findOne(id, user, 'owner')
 
+    team.data = Object.assign(team.data, data)
+    await team.save()
     return team.toJSON()
   }
 
-  @Put('/:id')
-  async updateById(@Param('id') id: string, @Body() data: Partial<Data>) {
-    const { request: { user } } = this.context
-
-    const ret = await TeamModel.updateOne({ _id: id, users: { $in: [user] } }, { data })
-    if (!ret)
-      throw new NotFoundException('无对应id的team')
-
-    return true
-  }
-
   @Delete('/:id')
-  async deleteById(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     const { request: { user } } = this.context
-
-    await TeamModel.deleteOne({ _id: id, users: { $in: [user] } })
+    const team = await this.teamService.findOne(id, user, 'owner')
+    await team.deleteOne()
     return true
   }
 
   @Post('/user')
   async addUser(@Body('') { teamId, userId }: { teamId: string; userId: string }) {
     const { request: { user } } = this.context
+    const newUser = await this.DB.user.findById(userId)
+    if (!newUser)
+      throw new BadRequestException(`不存在对应用户${userId}`)
 
-    await TeamModel.updateOne({
+    await this.DB.team.updateOne({
       id: teamId,
       users: { $in: [user] },
-    }, { $push: { users: new mongoose.Types.ObjectId(userId) } })
+    }, { $push: { users: newUser } })
     return true
   }
 }

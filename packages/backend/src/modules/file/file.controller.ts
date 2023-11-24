@@ -48,6 +48,6 @@ export class FileController {
       })
     })
 
-    return 'Upload and extract successfully'
+    return true
   }
 }

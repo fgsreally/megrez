@@ -12,7 +12,7 @@ import { log } from './utils'
 const cli = cac('megrez')
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const require = createRequire(__dirname)
-const globalConfig = require('./assets/megrez.json')
+const globalConfig = require('../assets/megrez.json')
 
 const request = axios.create({
   baseURL: globalConfig.baseUrl,
@@ -174,9 +174,9 @@ cli.command('asset')
     }
     else {
       log(`以下为命名空间${globalConfig.namespace.name}的所有资产`)
-      console.table(assets.map(({ description, name, category, _id }: any) => {
+      console.table(assets.map(({ description, name, type, _id }: any) => {
         return {
-          category,
+          type,
           name,
           description,
           id: _id,
@@ -191,7 +191,7 @@ cli.command('generate <module>')
   .option('-d,--dir <dir>', '', { default: '' }).action((module, { pkg, dir }) => {
     const { graph } = require(resolve(__dirname, '../template/data.json'))
     for (const path of graph[pkg][module]) {
-      const dest = resolve(process.cwd(), dir, path)
+      const dest = resolve(process.cwd(), dir, path.slice(pkg.length))
       if (!fs.existsSync(dest))
         fs.copy(resolve(__dirname, '../template', path), dest)
     }
